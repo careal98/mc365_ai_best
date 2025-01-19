@@ -1,16 +1,19 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation"; // Next.js에서 제공하는 useSearchParams
 import { Footer, Header, List, Noti } from "@/app/components/ai-best-case";
 import { CheckedType, DataType, FormType } from "@/types";
 import { FormProvider, useForm } from "react-hook-form";
 
 const limit = 3;
 
-const AiBestCasePage = ({ searchParams }: { searchParams: { [key: string]: string | undefined } }) => {
-  const [year] = useState<string | undefined>(searchParams.year);
-  const [month] = useState<string | undefined>(searchParams.month);
-  const [doctorId] = useState<string | undefined>(searchParams.doctorId);
+const AiBestCasePage = () => {
+  const searchParams = useSearchParams(); // URL에서 쿼리 파라미터를 가져옵니다.
+  
+  const year = searchParams.get('year');
+  const month = searchParams.get('month');
+  const doctorId = searchParams.get('doctorId');
 
   const [data, setData] = useState<DataType[]>([]);
   const [checekdData, setCheckedData] = useState<CheckedType[]>([]);
@@ -144,7 +147,7 @@ const AiBestCasePage = ({ searchParams }: { searchParams: { [key: string]: strin
   }, [data, isCopySelected, reset]);
 
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense fallback={null}>
       <FormProvider {...metods}>
         <div className="flex overflow-hidden flex-col mx-auto w-full h-full items-center max-w-[480px] bg-white shadow-[0_35px_60px_-15px_rgba(0,4,0,0.4)]">
           <Header
