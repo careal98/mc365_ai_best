@@ -6,13 +6,11 @@ import "swiper/swiper-bundle.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import {  useEffect, useCallback } from "react";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
 
 import { CheckedType, FormType } from "@/types";
-import { useSearchParams } from "next/navigation";
 
 interface ListProps {
   isCopySelected: string[];
@@ -35,10 +33,10 @@ const List = (
       setIsCopySelected,
     }: ListProps
   ) => {
-    const searchParams= useSearchParams();
-    const year = searchParams.get('year');
-    const month = searchParams.get('month');
-    const doctorId = searchParams.get('doctorId');
+    // const searchParams= useSearchParams();
+    // const year = searchParams.get('year');
+    // const month = searchParams.get('month');
+    // const doctorId = searchParams.get('doctorId');
 
     const { control, watch } = useFormContext<FormType>();
     const { fields, update } = useFieldArray<FormType>({
@@ -47,26 +45,26 @@ const List = (
     });
 
     // checkData를 useCallback으로 메모이제이션
-    const checkData = useCallback(async () => {
-      try {
-        const response = await fetch(
-          `/api/check/?year=${year}&month=${month}&doctorId=${doctorId}`
-        );
-        const result = await response.json();
-        return result;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        return null;
-      }
-    }, [year, month, doctorId]);
+    // const checkData = useCallback(async () => {
+    //   try {
+    //     const response = await fetch(
+    //       `/api/check/?year=${year}&month=${month}&doctorId=${doctorId}`
+    //     );
+    //     const result = await response.json();
+    //     return result;
+    //   } catch (error) {
+    //     console.error("Error fetching data:", error);
+    //     return null;
+    //   }
+    // }, [year, month, doctorId]);
 
-    useEffect(() => {
-      checkData().then((res) => {
-        if (res) {
-          // 필요한 로직을 여기에 추가
-        }
-      });
-    }, [checkData]);
+    // useEffect(() => {
+    //   checkData().then((res) => {
+    //     if (res) {
+    //       // 필요한 로직을 여기에 추가
+    //     }
+    //   });
+    // }, [checkData]);
 
     const handleHeartClick = (fieldIdx: number, currentId: string) => {
       const isAlreadyChecked = isCopySelected.includes(currentId);

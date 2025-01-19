@@ -2,7 +2,6 @@
 
 import { FormType } from "@/types";
 import { useFormContext } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 
 interface Props {
   handleFetchMore: () => void;
@@ -10,6 +9,7 @@ interface Props {
   setIsMessage: (v: string) => void;
   setIsError: (v: boolean) => void;
   isCopySelected: string[];
+  doctorId: string;
 }
 
 const Footer = ({
@@ -18,9 +18,8 @@ const Footer = ({
   setIsMessage,
   setIsError,
   isCopySelected,
+  doctorId
 }: Props) => {
-  const searchParams = useSearchParams();
-  const doctorId = searchParams.get('doctorId');
   const { watch } = useFormContext<FormType>();
   const isRandom = watch()?.isRandom;
   const isBest = isRandom?.filter((v) => v?.isBest);

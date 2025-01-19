@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Footer, Header, List, Noti } from "@/app/components/ai-best-case";
 import { CheckedType, DataType, FormType } from "@/types";
 import { useSearchParams } from "next/navigation";
@@ -177,40 +178,43 @@ const AiBestCasePage = () => {
   }, [checekdData]);
 
   return (
-    <FormProvider {...metods}>
-      <div className="flex overflow-hidden flex-col mx-auto w-full h-full items-center max-w-[480px] bg-white shadow-[0_35px_60px_-15px_rgba(0,4,0,0.4)]">
-        <Header
-          doctorName={data?.[0]?.user?.doctorName}
-          selectedCount={isCopySelected?.length}
-          prevYear={prevYear}
-          prevMonth={prevMonth}
-        />
-        <List
-          isCopySelected={isCopySelected}
-          setIsCopySelected={setIsCopySelected}
-          selectedData={checekdData}
-          isLoading={isLoading}
-          setIsMessage={setIsMessage}
-          setIsPostEnd={setIsPostEnd}
-          setIsError={setIsError}
-        />
-        <Footer
-          isCopySelected={isCopySelected}
-          handleFetchMore={handleFetchMore}
-          setIsPostEnd={setIsPostEnd}
-          setIsMessage={setIsMessage}
-          setIsError={setIsError}
-        />
-        <Noti
-          key={`${JSON.stringify(isPostEnd)}}`}
-          isOpen={isPostEnd}
-          setIsPostEnd={setIsPostEnd}
-          isMessage={isMessage}
-          isError={isError}
-          setIsError={setIsError}
-        />
-      </div>
-    </FormProvider>
+    <Suspense >
+      <FormProvider {...metods}>
+        <div className="flex overflow-hidden flex-col mx-auto w-full h-full items-center max-w-[480px] bg-white shadow-[0_35px_60px_-15px_rgba(0,4,0,0.4)]">
+          <Header
+            doctorName={data?.[0]?.user?.doctorName}
+            selectedCount={isCopySelected?.length}
+            prevYear={prevYear}
+            prevMonth={prevMonth}
+            />
+          <List
+            isCopySelected={isCopySelected}
+            setIsCopySelected={setIsCopySelected}
+            selectedData={checekdData}
+            isLoading={isLoading}
+            setIsMessage={setIsMessage}
+            setIsPostEnd={setIsPostEnd}
+            setIsError={setIsError}
+            />
+          <Footer
+            isCopySelected={isCopySelected}
+            handleFetchMore={handleFetchMore}
+            setIsPostEnd={setIsPostEnd}
+            setIsMessage={setIsMessage}
+            setIsError={setIsError}
+            doctorId={doctorId ?? ''}
+            />
+          <Noti
+            key={`${JSON.stringify(isPostEnd)}}`}
+            isOpen={isPostEnd}
+            setIsPostEnd={setIsPostEnd}
+            isMessage={isMessage}
+            isError={isError}
+            setIsError={setIsError}
+            />
+        </div>
+      </FormProvider>
+    </Suspense>
   );
 }
 export default AiBestCasePage;
