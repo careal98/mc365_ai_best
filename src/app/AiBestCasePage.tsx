@@ -43,7 +43,7 @@ const AiBestCasePage = () => {
         })),
         },
     });
-    const { reset } = metods;
+    const { reset, getValues } = metods;
 
     // URL의 year, month를 정수로 변환
     const linkYear = parseInt(year ?? "", 10);
@@ -127,23 +127,24 @@ const AiBestCasePage = () => {
     useEffect(() => {
         reset({
         isRandom: data?.map((v: DataType) => ({
+            ...getValues().isRandom,
             isBest: isCopySelected.includes(v.user.psEntry) ? true : false,
-            user: v.user,
-            imgs: {
-            afterImgs: v?.imgs?.afterImgs,
-            beforeImgs: v?.imgs?.beforeImgs,
-            },
-            size: {
-            before: v?.size?.before,
-            after: v?.size?.after,
-            },
-            weight: {
-            before: v?.weight?.before,
-            after: v?.weight?.after,
-            },
+            // user: v.user,
+            // imgs: {
+            // afterImgs: v?.imgs?.afterImgs,
+            // beforeImgs: v?.imgs?.beforeImgs,
+            // },
+            // size: {
+            // before: v?.size?.before,
+            // after: v?.size?.after,
+            // },
+            // weight: {
+            // before: v?.weight?.before,
+            // after: v?.weight?.after,
+            // },
         })),
         });
-    }, [data, isCopySelected, reset]);
+    }, [data, getValues, isCopySelected, reset]);
 
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
