@@ -11,6 +11,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
 
 import { CheckedType, FormType } from "@/types";
+import { useMemo } from "react";
 
 interface ListProps {
   isCopySelected: string[];
@@ -66,6 +67,7 @@ const List = (
     //   });
     // }, [checkData]);
 
+  const handleHeartClick = useMemo(() => {
     const handleHeartClick = (fieldIdx: number, currentId: string) => {
       const isAlreadyChecked = isCopySelected.includes(currentId);
       if (isAlreadyChecked) {
@@ -103,6 +105,8 @@ const List = (
         }
       }
     };
+    return handleHeartClick
+  },[isCopySelected])
 
     return (
       <div className="w-full flex flex-col py-2 h-full px-4 gap-y-2 overflow-scroll bg-[#ff6600]/10">
