@@ -8,11 +8,11 @@ interface UserInfo {
 }
 
 export async function GET(req: Request) {
-    const url = new URL(req.url);
-    const { year, month, doctorId, offset = 0, limit = 3 } = Object.fromEntries(url.searchParams.entries());
-    const confidence1 = 0.7;
-
+    
     try {
+        const url = new URL(req.url);
+        const { year, month, doctorId, offset = 0, limit = 3 } = Object.fromEntries(url.searchParams.entries());
+        const confidence1 = 0.7;
         // AI가 선정한 사진에 해당하는 수술 정보
         const baseSql = `
         SELECT * 
