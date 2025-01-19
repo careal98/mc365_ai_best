@@ -38,8 +38,8 @@ const List = (
     // const month = searchParams.get('month');
     // const doctorId = searchParams.get('doctorId');
 
-    const { control, watch } = useFormContext<FormType>();
-    const { fields, update } = useFieldArray<FormType>({
+    const { control, watch, setValue } = useFormContext<FormType>();
+    const { fields } = useFieldArray<FormType>({
       control,
       name: "isRandom",
     });
@@ -75,10 +75,11 @@ const List = (
         if (aaa.length <= 2) {
           watch()?.isRandom?.map((item, itemIdx) => {
             if (item?.user?.psEntry === currentId) {
-              update(itemIdx, {
-                ...item,
-                isBest: false,
-              });
+              // update(itemIdx, {
+              //   ...item,
+              //   isBest: false,
+              // });
+              setValue(`isRandom.${itemIdx}.isBest`, false)
             }
           });
         }
@@ -93,10 +94,12 @@ const List = (
           setIsPostEnd(true);
           setIsError(true);
         } else {
-          update(fieldIdx, {
-            ...fields[fieldIdx],
-            isBest: true,
-          });
+          // update(fieldIdx, {
+          //   ...fields[fieldIdx],
+          //   isBest: true,
+          // });
+             // });
+          setValue(`isRandom.${fieldIdx}.isBest`, true)
           setIsCopySelected((prev) => [...prev, currentId]);
           setIsPostEnd(false);
           setIsError(false);
