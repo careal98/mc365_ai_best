@@ -45,7 +45,7 @@ const Footer = ({
       { selected: [...selectedData] },
       { unselected: [...disSelectedData] },
     ];
-    fetch(`https://mc365-ai-best-djgy.vercel.app/api/best`, {
+    fetch(`/api/best`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
