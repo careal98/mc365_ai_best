@@ -147,7 +147,7 @@ const AiBestCasePage = () => {
   }, [data, isCopySelected, reset]);
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div>로딩 중...</div>}>
       <FormProvider {...metods}>
         <div className="flex overflow-hidden flex-col mx-auto w-full h-full items-center max-w-[480px] bg-white shadow-[0_35px_60px_-15px_rgba(0,4,0,0.4)]">
           <Header
