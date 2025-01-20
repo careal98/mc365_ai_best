@@ -13,8 +13,8 @@ import Skeletons from "./skeletons";
 import { CheckedType, FormType } from "@/types";
 
 interface ListProps {
-  isCopySelected: string[];
-  setIsCopySelected: React.Dispatch<React.SetStateAction<string[]>>;
+  isCopySelected: CheckedType[];
+  setIsCopySelected: React.Dispatch<React.SetStateAction<CheckedType[]>>;
   isLoading: boolean;
   setIsPostEnd: (v: boolean) => void;
   setIsError: (v: boolean) => void;
@@ -38,7 +38,7 @@ const List = (
     // const month = searchParams.get('month');
     // const doctorId = searchParams.get('doctorId');
 
-    const { control, watch, setValue } = useFormContext<FormType>();
+    const { control, setValue } = useFormContext<FormType>();
     const { fields } = useFieldArray<FormType>({
       control,
       name: "isRandom",
@@ -65,25 +65,27 @@ const List = (
     //     }
     //   });
     // }, [checkData]);
-
-    const handleHeartClick = (fieldIdx: number, currentId: string) => {
-      const isAlreadyChecked = isCopySelected.includes(currentId);
+    const handleHeartClick = (fieldIdx: number, currentId: string, currentOpDate: string) => {
+      const isAlreadyChecked = isCopySelected.find(f => f.psEntry === currentId && f.opDate === currentOpDate);
       if (isAlreadyChecked) {
-        const aaa = watch()?.isRandom?.filter(
-          (v) => v?.user?.psEntry === currentId
-        );
-        if (aaa.length <= 2) {
-          watch()?.isRandom?.map((item, itemIdx) => {
-            if (item?.user?.psEntry === currentId) {
-              // update(itemIdx, {
-              //   ...item,
-              //   isBest: false,
-              // });
-              setValue(`isRandom.${itemIdx}.isBest`, false)
-            }
-          });
-        }
-        setIsCopySelected((prev) => prev.filter((id) => id !== currentId));
+        // const aaa = watch()?.isRandom?.filter(
+        //   (v) => v?.user?.psEntry === currentId && v?.user?.op_data === currentOpDate
+        // );
+        // console.log('aaa', aaa)
+        // if (aaa.length <= 1) {
+        //   watch()?.isRandom?.map((item, itemIdx) => {
+        //     console.log(item?.user?.psEntry === currentId && item?.user?.op_data === currentOpDate);
+        //     if (item?.user?.psEntry === currentId && item?.user?.op_data === currentOpDate) {
+        //       // update(itemIdx, {
+        //       //   ...item,
+        //       //   isBest: false,
+        //       // });
+        //       setValue(`isRandom.${itemIdx}.isBest`, false)
+        //     }
+        //   });
+        // }
+        setValue(`isRandom.${fieldIdx}.isBest`, false);
+        setIsCopySelected((prev) => prev.filter((p) => !(p.psEntry === currentId && p.opDate === currentOpDate)));
         setIsPostEnd(false);
         setIsError(false);
       } else {
@@ -99,8 +101,8 @@ const List = (
           //   isBest: true,
           // });
              // });
-          setValue(`isRandom.${fieldIdx}.isBest`, true)
-          setIsCopySelected((prev) => [...prev, currentId]);
+          setValue(`isRandom.${fieldIdx}.isBest`, true);
+          setIsCopySelected((prev) => prev ? [...prev, {psEntry: currentId, opDate: currentOpDate}] : [{psEntry: currentId, opDate: currentOpDate}]);
           setIsPostEnd(false);
           setIsError(false);
         }
@@ -160,7 +162,8 @@ const List = (
                         }`}
                         onClick={() => {
                           const currentId = fields?.[fieldIdx]?.user?.psEntry;
-                          handleHeartClick(fieldIdx, currentId);
+                          const currentOpDate = fields?.[fieldIdx]?.user?.op_data;
+                          handleHeartClick(fieldIdx, currentId, currentOpDate);
                         }}
                       >
                         <svg className="heart3 w-7 h-7 ">

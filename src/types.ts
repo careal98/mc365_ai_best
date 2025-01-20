@@ -29,4 +29,5 @@ export type DataType = {
 };
 export type CheckedType = {
   psEntry: string;
+  opDate: string
 };

@@ -21,12 +21,12 @@ const AiBestCasePage = () => {
     const [isPostEnd, setIsPostEnd] = useState(false);
     const [isError, setIsError] = useState(false);
     const [isMessage, setIsMessage] = useState("");
-    const [isCopySelected, setIsCopySelected] = useState<string[]>([]);
+    const [isCopySelected, setIsCopySelected] = useState<CheckedType[]>([]);
 
     const metods = useForm<FormType>({
         defaultValues: {
         isRandom: data?.map((v: DataType) => ({
-            isBest: isCopySelected.includes(v.user.psEntry) ? true : false,
+            isBest: isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
             user: v.user,
             imgs: {
             afterImgs: v?.imgs?.afterImgs,
@@ -74,7 +74,6 @@ const AiBestCasePage = () => {
         }
     };
 
-    // 스크롤 감지 및 데이터 추가
     const handleFetchMore = () => {
         if (hasMore && !isLoading) {
         setIsLoading(true);
@@ -120,14 +119,18 @@ const AiBestCasePage = () => {
     }, [year, month, doctorId]);
 
     useEffect(() => {
-        const arr = new Set(checekdData?.map((v) => v.psEntry));
+        const aaa = checekdData?.map((v) => ({
+            psEntry: v?.psEntry,
+            opDate: v?.opDate
+        }))
+        const arr = new Set([...aaa]);
         setIsCopySelected([...arr]);
     }, [checekdData]);
 
     useEffect(() => {
         reset({
         isRandom: data?.map((v: DataType) => ({
-            isBest: isCopySelected.includes(v.user.psEntry) ? true : false,
+            isBest:isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
             user: v.user,
             imgs: {
             afterImgs: v?.imgs?.afterImgs,
@@ -144,7 +147,6 @@ const AiBestCasePage = () => {
         })),
         });
     }, [data, isCopySelected, reset]);
-
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
         <FormProvider {...metods}>

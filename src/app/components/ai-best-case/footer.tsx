@@ -1,6 +1,6 @@
 "use client";
 
-import { FormType } from "@/types";
+import { CheckedType, FormType } from "@/types";
 import { useFormContext } from "react-hook-form";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   setIsPostEnd: (v: boolean) => void;
   setIsMessage: (v: string) => void;
   setIsError: (v: boolean) => void;
-  isCopySelected: string[];
+  isCopySelected: CheckedType[];
   doctorId: string;
 }
 
@@ -26,10 +26,10 @@ const Footer = ({
 
   const onPostSelected = () => {
     const isTrue = isBest?.filter((v) =>
-      isCopySelected?.includes(v.user?.psEntry)
+      isCopySelected?.find(f => f.psEntry === v?.user?.psEntry && f.opDate === v?.user?.op_data)
     );
     const isFalse = watch()?.isRandom?.filter(
-      (v) => !isCopySelected?.includes(v.user?.psEntry)
+      (v) => isCopySelected?.find(f => !(f.psEntry === v?.user?.psEntry && f.opDate === v?.user?.op_data))
     );
     const selectedData = isTrue?.map((v) => ({
       psEntry: v.user.psEntry,
@@ -45,6 +45,7 @@ const Footer = ({
       { selected: [...selectedData] },
       { unselected: [...disSelectedData] },
     ];
+    
     fetch(`/api/best`, {
       method: "POST",
       headers: {
