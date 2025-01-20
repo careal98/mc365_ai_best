@@ -23,6 +23,7 @@ const AiBestCasePage = () => {
     const [isError, setIsError] = useState(false);
     const [isMessage, setIsMessage] = useState("");
     const [isCopySelected, setIsCopySelected] = useState<CheckedType[]>([]);
+    const [isClick, setIsClick] = useState(false)
 
     const metods = useForm<FormType>({
         defaultValues: {
@@ -72,23 +73,21 @@ const AiBestCasePage = () => {
         }
     };
 
+    // 더 많은 데이터 요청 함수
     const handleFetchMore = () => {
-        console.log('1212313')
-        // if (hasMore && !isLoading) {
-        setIsLoading(true);
-        fetchData(data.length)
-            .then((newData) => {
-            if (newData) {
-                setData((prev) => [...prev, ...newData]);
-                if (newData.length < limit) {
-                setHasMore(false);
+        if (isClick && hasMore && !isLoading) {
+            setIsLoading(true);
+            fetchData(data.length).then((newData) => {
+                if (newData) {
+                    setData((prev) => [...prev, ...newData]);
+                    if (newData.length < limit) {
+                        setHasMore(false); // 데이터가 3개 미만일 경우 더 이상 데이터를 불러오지 않음
+                    }
                 }
-            }
-            })
-            .finally(() => {
-            setIsLoading(false);
+            }).finally(() => {
+                setIsLoading(false);
             });
-        // }
+        }
     };
 
     // 이미 베스트로 선정됐는지 찾는 함수
@@ -108,32 +107,33 @@ const AiBestCasePage = () => {
         }
     };
 
-        // 스크롤 감지
     const { ref } = useInView({
         initialInView: false,
         onChange: (inView) => {
             if (inView && hasMore && !isLoading) {
-                setIsLoading(true);
-                handleFetchMore()
+                handleFetchMore();
             }
         },
     });
 
-    // 처음 3개 데이터 로드
     useEffect(() => {
-        fetchData(0).then((newData) => {
-            if (newData) {
-                setData(newData);
-                setHasMore(false);
-                if (newData.length < limit) {
-                    setHasMore(false);
+        if (!isLoading) {
+            setIsLoading(true);
+            fetchData(0).then((newData) => {
+                if (newData) {
+                    setData(newData);
+                    if (newData.length < limit) {
+                        setHasMore(false); 
+                    }
                 }
-            }
-        });
+            }).finally(() => {
+                setIsLoading(false);
+            });
+        }
     }, []);
 
     const onHandleData = () => {
-        setHasMore(true)
+        setIsClick(true)
         handleFetchMore()
     }
 
