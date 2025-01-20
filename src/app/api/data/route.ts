@@ -34,7 +34,7 @@ export async function GET(req: Request) {
                 AND A.Op_Date < I.op_data
                 AND A.Surgical_Site COLLATE Korean_Wansung_CI_AS = I.section COLLATE Korean_Wansung_CI_AS
             )
-        ORDER BY RANK
+        ORDER BY RANK ASC, Op_Date DESC
         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
         `;
         const results: any[] = await queryDB(baseSql);

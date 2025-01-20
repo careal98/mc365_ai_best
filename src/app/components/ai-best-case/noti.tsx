@@ -43,7 +43,7 @@ const Noti = ({
       message: null,
       key: JSON.stringify(isOpen),
       closable: false,
-      duration: 1.5,
+      duration: 2,
       style: {
         backgroundColor: isError ? "#FBE9E7" : "#E0F2F1",
         padding: "10px 10px 10px 10px",
