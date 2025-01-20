@@ -124,21 +124,21 @@ const AiBestCasePage = () => {
         });
     }, [year, month, doctorId]);
 
-    // useEffect(() => {
-    //     handleFetchMore();
-    // }, [year, month, doctorId]);
-
     // 처음 3개 데이터 로드
     useEffect(() => {
         fetchData(0).then((newData) => {
             if (newData) {
                 setData(newData);
                 if (newData.length < limit) {
-                    setHasMore(false);
+                    setHasMore(false); // 데이터가 3개 미만일 경우 더 이상 데이터를 불러오지 않음
                 }
             }
         });
     }, []);
+
+    // useEffect(() => {
+    //     handleFetchMore();
+    // }, [year, month, doctorId]);
 
     useEffect(() => {
         const aaa = checekdData?.map((v) => ({
