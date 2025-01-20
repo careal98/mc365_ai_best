@@ -53,7 +53,7 @@ const Footer = ({
       { selected: [...selectedData] },
       { unselected: [...disSelectedData] },
     ];
-    
+
     fetch(`/api/best`, {
       method: "POST",
       headers: {
@@ -91,7 +91,9 @@ const Footer = ({
         className="border-[1px] w-full py-3 rounded-lg border-[#ff6600] bg-[#ff6600]"
         onClick={() => onPostSelected()}
       >
-        <p className="text-[17px] text-white font-bold">확정</p>
+        <p className="text-[17px] text-white font-bold">
+          {dataLegth <= 3  ? '선정하기' : '베스트 리뷰 선정하기'}
+        </p>
       </button>
     </div>
   );
