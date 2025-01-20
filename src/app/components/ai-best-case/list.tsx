@@ -11,6 +11,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
 
 import { CheckedType, FormType } from "@/types";
+import { forwardRef } from "react";
 
 interface ListProps {
   isCopySelected: CheckedType[];
@@ -22,7 +23,7 @@ interface ListProps {
   selectedData: CheckedType[];
 }
 
-const List = (
+const List = forwardRef<HTMLDivElement, ListProps>(
   (
     {
       isLoading,
@@ -31,7 +32,8 @@ const List = (
       setIsError,
       isCopySelected,
       setIsCopySelected,
-    }: ListProps
+    }: ListProps,
+    ref
   ) => {
     // const searchParams= useSearchParams();
     // const year = searchParams.get('year');
@@ -43,7 +45,6 @@ const List = (
       control,
       name: "isRandom",
     });
-
     // checkData를 useCallback으로 메모이제이션
     // const checkData = useCallback(async () => {
     //   try {
@@ -65,6 +66,7 @@ const List = (
     //     }
     //   });
     // }, [checkData]);
+    
     const handleHeartClick = (fieldIdx: number, currentId: string, currentOpDate: string) => {
       const isAlreadyChecked = isCopySelected.find(f => f.psEntry === currentId && f.opDate === currentOpDate);
       if (isAlreadyChecked) {
@@ -227,8 +229,10 @@ const List = (
           tip={<p className="pt-1 font-semibold">AI 분석 중...</p>}
           indicator={<LoadingOutlined spin className="text-[#ff6600]" />}
         />
+        <div ref={ref}  style={{ height: '1px' , paddingTop: '4px'}}/>
       </div>
     );
   }
 );
+List.displayName = "List";
 export default List;

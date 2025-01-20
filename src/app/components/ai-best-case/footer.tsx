@@ -10,6 +10,7 @@ interface Props {
   setIsError: (v: boolean) => void;
   isCopySelected: CheckedType[];
   doctorId: string;
+  dataLegth: number;
 }
 
 const Footer = ({
@@ -18,12 +19,14 @@ const Footer = ({
   setIsMessage,
   setIsError,
   isCopySelected,
-  doctorId
+  doctorId,
+  dataLegth
 }: Props) => {
   const { watch } = useFormContext<FormType>();
   const isRandom = watch()?.isRandom;
   const isBest = isRandom?.filter((v) => v?.isBest);
 
+  // 베스트 선정하기
   const onPostSelected = () => {
     const isTrue = isBest?.filter((v) =>
       isCopySelected?.find(f => f.psEntry === v?.user?.psEntry && f.opDate === v?.user?.op_data)
@@ -70,35 +73,21 @@ const Footer = ({
 
   return (
     <div className="w-full h-[80px] bg-white px-4 py-3 items-center flex justify-between gap-2 shadow-md">
-      {/* <div className="flex items-center gap-1">
-        <button
-          className="text-[#ff6600]"
-          onClick={() =>
-            watch().isRandom?.map((_, idx) =>
-              setValue(`isRandom.${idx}.isBest`, false)
-            )
-          }
-        >
-          <svg className="heart3 w-8 h-8">
-            <use href="/assets/sprite.svg#heart3"></use>
-          </svg>
-        </button>
-        <p className="text-[24px] text-gray-700">{count}</p>
-      </div> */}
-      {/* <div className="flex gap-4"> */}
+      {
+        dataLegth < 3 &&
       <button
-        className="border-[1px] w-full py-3 rounded-lg border-[#ff6600]"
-        onClick={handleFetchMore}
+      className="border-[1px] w-full py-3 rounded-lg border-[#ff6600]"
+      onClick={handleFetchMore}
       >
-        <p className="text-[17px] text-gray-700 font-bold">더보기</p>
+        <p className="text-[17px] text-gray-700 font-bold">다른 수술 찾기</p>
       </button>
+      }
       <button
         className="border-[1px] w-full py-3 rounded-lg border-[#ff6600] bg-[#ff6600]"
         onClick={() => onPostSelected()}
       >
-        <p className="text-[17px] text-white font-bold">확인</p>
+        <p className="text-[17px] text-white font-bold">확정</p>
       </button>
-      {/* </div> */}
     </div>
   );
 };

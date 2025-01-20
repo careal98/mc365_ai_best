@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Footer, Header, List, Noti } from "@/app/components/ai-best-case";
 import { CheckedType, DataType, FormType } from "@/types";
 import { FormProvider, useForm } from "react-hook-form";
+import { useInView } from "react-intersection-observer";
 
 const limit = 3;
 
@@ -26,7 +27,7 @@ const AiBestCasePage = () => {
     const metods = useForm<FormType>({
         defaultValues: {
         isRandom: data?.map((v: DataType) => ({
-            isBest: isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
+            isBest: data?.length == 3 ? true : isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
             user: v.user,
             imgs: {
             afterImgs: v?.imgs?.afterImgs,
@@ -45,17 +46,14 @@ const AiBestCasePage = () => {
     });
     const { reset } = metods;
 
-    // URL의 year, month를 정수로 변환
     const linkYear = parseInt(year ?? "", 10);
     const linkMonth = parseInt(month ?? "", 10);
 
-    // Date 객체를 생성하고 2개월 전으로 설정
-    const date = new Date(linkYear, linkMonth - 1, 1); // month는 0부터 시작
+    const date = new Date(linkYear, linkMonth - 1, 1); 
     date.setMonth(date.getMonth() - 2);
 
-    // 결과 계산
     const prevYear = date.getFullYear();
-    const prevMonth = date.getMonth() + 1; // month는 0부터 시작하므로 +1
+    const prevMonth = date.getMonth() + 1; 
 
     // 데이터 가져오기 함수
     const fetchData = async (offset: number) => {
@@ -92,6 +90,7 @@ const AiBestCasePage = () => {
         }
     };
 
+    // 이미 베스트로 선정됐는지 찾는 함수
     const checkData = async () => {
         try {
         const response = await fetch(
@@ -108,15 +107,38 @@ const AiBestCasePage = () => {
         }
     };
 
+        // 스크롤 감지
+    const { ref } = useInView({
+        initialInView: false,
+        onChange: (inView) => {
+        if (inView && hasMore && !isLoading) {
+            setIsLoading(true);
+            handleFetchMore()
+        }
+        },
+    });
+
     useEffect(() => {
         checkData().then((res) => {
         setCheckedData(res);
         });
     }, [year, month, doctorId]);
 
+    // useEffect(() => {
+    //     handleFetchMore();
+    // }, [year, month, doctorId]);
+
+    // 처음 3개 데이터 로드
     useEffect(() => {
-        handleFetchMore();
-    }, [year, month, doctorId]);
+        fetchData(0).then((newData) => {
+            if (newData) {
+                setData(newData);
+                if (newData.length < limit) {
+                    setHasMore(false);
+                }
+            }
+        });
+    }, []);
 
     useEffect(() => {
         const aaa = checekdData?.map((v) => ({
@@ -130,7 +152,7 @@ const AiBestCasePage = () => {
     useEffect(() => {
         reset({
         isRandom: data?.map((v: DataType) => ({
-            isBest:isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
+            isBest: data?.length === 3 ? true : isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
             user: v.user,
             imgs: {
             afterImgs: v?.imgs?.afterImgs,
@@ -147,6 +169,7 @@ const AiBestCasePage = () => {
         })),
         });
     }, [data, isCopySelected, reset]);
+
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
         <FormProvider {...metods}>
@@ -158,6 +181,7 @@ const AiBestCasePage = () => {
                 prevMonth={prevMonth}
             />
             <List
+                ref={ref}
                 isCopySelected={isCopySelected}
                 setIsCopySelected={setIsCopySelected}
                 selectedData={checekdData}
@@ -167,6 +191,7 @@ const AiBestCasePage = () => {
                 setIsError={setIsError}
             />
             <Footer
+                dataLegth={data?.length}
                 isCopySelected={isCopySelected}
                 handleFetchMore={handleFetchMore}
                 setIsPostEnd={setIsPostEnd}
