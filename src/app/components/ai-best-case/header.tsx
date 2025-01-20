@@ -5,9 +5,10 @@ interface Props {
   selectedCount: number;
   prevYear: number;
   prevMonth: number;
+  isAnimating: boolean
 }
 
-const Header = ({ doctorName, selectedCount, prevYear, prevMonth }: Props) => {
+const Header = ({ doctorName, selectedCount, prevYear, prevMonth,isAnimating }: Props) => {
 
   return (
     <div className="py-3 px-4 w-full flex justify-between shadow-md items-center">
@@ -23,10 +24,17 @@ const Header = ({ doctorName, selectedCount, prevYear, prevMonth }: Props) => {
         </p>
       </div>
       <div className="flex items-center gap-x-1 w-[50px]">
-        {/* <button className="text-[#ff6600]"> */}
-        <svg className="heart3 w-6 h-6 text-[#ff6600]">
+      {isAnimating ? (
+          <img src='/assets/heart6.gif' alt="Heart Animation" width="24" />
+        ) : (
+          <svg className="heart3 w-6 h-6 text-[#ff6600]">
           <use href="/assets/sprite.svg#heart3"></use>
         </svg>
+        )}
+        {/* <button className="text-[#ff6600]"> */}
+        {/* <svg className="heart3 w-6 h-6 text-[#ff6600]">
+          <use href="/assets/sprite.svg#heart3"></use>
+        </svg> */}
         {/* </button> */}
         <p className="text-[14px] text-gray-700 font-semibold normal-nums mb-1">
           {selectedCount}/3

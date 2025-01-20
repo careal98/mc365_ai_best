@@ -6,7 +6,7 @@ import "swiper/swiper-bundle.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Spin } from "antd";
+import { Image, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
 
@@ -21,7 +21,10 @@ interface ListProps {
   setIsError: (v: boolean) => void;
   setIsMessage: (v: string) => void;
   selectedData: CheckedType[];
+  setIsAnimating: (v: boolean) => void;
 }
+
+const imgUrl = 'https://mc365-backup.synology.me:8081/thumb/480/surgery';
 
 const List = forwardRef<HTMLDivElement, ListProps>(
   (
@@ -32,20 +35,16 @@ const List = forwardRef<HTMLDivElement, ListProps>(
       setIsError,
       isCopySelected,
       setIsCopySelected,
+      setIsAnimating
     }: ListProps,
     ref
   ) => {
-    // const searchParams= useSearchParams();
-    // const year = searchParams.get('year');
-    // const month = searchParams.get('month');
-    // const doctorId = searchParams.get('doctorId');
-
     const { control, setValue } = useFormContext<FormType>();
     const { fields } = useFieldArray<FormType>({
       control,
       name: "isRandom",
     });
-    // checkData를 useCallback으로 메모이제이션
+
     // const checkData = useCallback(async () => {
     //   try {
     //     const response = await fetch(
@@ -66,7 +65,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
     //     }
     //   });
     // }, [checkData]);
-    
+
     const handleHeartClick = (fieldIdx: number, currentId: string, currentOpDate: string) => {
       const isAlreadyChecked = isCopySelected.find(f => f.psEntry === currentId && f.opDate === currentOpDate);
       if (isAlreadyChecked) {
@@ -109,6 +108,12 @@ const List = forwardRef<HTMLDivElement, ListProps>(
           setIsError(false);
         }
       }
+
+      setIsAnimating(true);
+        
+      setTimeout(() => {
+          setIsAnimating(false);
+      }, 1750); 
     };
 
     return (
@@ -140,12 +145,16 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                   const filename = img.slice(4);
                   return (
                     <SwiperSlide key={imgIdx} className="flex w-full gap-x-2">
+                      <Image.PreviewGroup items={newImgs?.map(v => `${imgUrl}${v.slice(4)}`)}>
                       <div className="flex relative w-full gap-x-2">
-                        <img
-                          src={`https://mc365-backup.synology.me:8081/thumb/480/surgery${filename}`}
+                        <Image
+                          height={140}
+                          src={`${imgUrl}${filename}`}
+                          loading="lazy"
                           className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
                           onError={(e) => (e.currentTarget.src = "/assets/지방이.jpg")}                       />
                       </div>
+                    </Image.PreviewGroup>
                     </SwiperSlide>
                   );
                 })}

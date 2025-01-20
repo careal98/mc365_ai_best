@@ -25,19 +25,24 @@ const Footer = ({
   const { watch } = useFormContext<FormType>();
   const isRandom = watch()?.isRandom;
   const isBest = isRandom?.filter((v) => v?.isBest);
+  const isNotBest = isRandom?.filter((v) => !v?.isBest);
 
   // 베스트 선정하기
   const onPostSelected = () => {
-    const isTrue = isBest?.filter((v) =>
+    const isTrue =  isBest?.filter((v) =>
       isCopySelected?.find(f => f.psEntry === v?.user?.psEntry && f.opDate === v?.user?.op_data)
     );
-    const isFalse = watch()?.isRandom?.filter(
+    const isFalse = isNotBest?.filter(
       (v) => isCopySelected?.find(f => !(f.psEntry === v?.user?.psEntry && f.opDate === v?.user?.op_data))
     );
-    const selectedData = isTrue?.map((v) => ({
+    const selectedData = isTrue?.length !== 0 ? isTrue?.map((v) => ({
       psEntry: v.user.psEntry,
       doctorId: doctorId,
       op_date: v?.user?.op_data,
+    })) : isCopySelected?.map(c => ({
+        psEntry: c?.psEntry,
+        doctorId: doctorId,
+        op_date: c?.opDate,
     }));
     const disSelectedData = isFalse?.map((u) => ({
       psEntry: u.user.psEntry,

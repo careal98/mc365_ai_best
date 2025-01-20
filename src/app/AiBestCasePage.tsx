@@ -16,6 +16,7 @@ const AiBestCasePage = () => {
     const doctorId = searchParams.get('doctorId');
 
     const [data, setData] = useState<DataType[]>([]);
+    const [firstData, setFirstData] = useState<DataType[]>([]);
     const [checekdData, setCheckedData] = useState<CheckedType[]>([]);
     const [hasMore, setHasMore] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,26 +24,27 @@ const AiBestCasePage = () => {
     const [isError, setIsError] = useState(false);
     const [isMessage, setIsMessage] = useState("");
     const [isCopySelected, setIsCopySelected] = useState<CheckedType[]>([]);
-    const [isClick, setIsClick] = useState(false)
+    const [isClick, setIsClick] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const metods = useForm<FormType>({
         defaultValues: {
-        isRandom: data?.map((v: DataType) => ({
-            isBest: data?.length == 3 ? true : isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
-            user: v.user,
-            imgs: {
-            afterImgs: v?.imgs?.afterImgs,
-            beforeImgs: v?.imgs?.beforeImgs,
-            },
-            size: {
-            before: v?.size?.before,
-            after: v?.size?.after,
-            },
-            weight: {
-            before: v?.weight?.before,
-            after: v?.weight?.after,
-            },
-        })),
+            isRandom: data?.map((v: DataType) => ({
+                isBest:isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
+                user: v.user,
+                imgs: {
+                afterImgs: v?.imgs?.afterImgs,
+                beforeImgs: v?.imgs?.beforeImgs,
+                },
+                size: {
+                before: v?.size?.before,
+                after: v?.size?.after,
+                },
+                weight: {
+                before: v?.weight?.before,
+                after: v?.weight?.after,
+                },
+            })),
         },
     });
     const { reset } = metods;
@@ -73,7 +75,6 @@ const AiBestCasePage = () => {
         }
     };
 
-    // 더 많은 데이터 요청 함수
     const handleFetchMore = () => {
         if (isClick && hasMore && !isLoading) {
             setIsLoading(true);
@@ -81,7 +82,7 @@ const AiBestCasePage = () => {
                 if (newData) {
                     setData((prev) => [...prev, ...newData]);
                     if (newData.length < limit) {
-                        setHasMore(false); // 데이터가 3개 미만일 경우 더 이상 데이터를 불러오지 않음
+                        setHasMore(false);
                     }
                 }
             }).finally(() => {
@@ -121,7 +122,23 @@ const AiBestCasePage = () => {
             setIsLoading(true);
             fetchData(0).then((newData) => {
                 if (newData) {
-                    setData(newData);
+                    setFirstData(newData?.map((n: DataType) => ({
+                        isBest: true,
+                        user: n?.user,
+                        imgs: {
+                        afterImgs: n?.imgs?.afterImgs,
+                        beforeImgs: n?.imgs?.beforeImgs,
+                        },
+                        size: {
+                        before: n?.size?.before,
+                        after: n?.size?.after,
+                        },
+                        weight: {
+                        before: n?.weight?.before,
+                        after: n?.weight?.after,
+                        },
+                    })));
+                    setData(newData)
                     if (newData.length < limit) {
                         setHasMore(false); 
                     }
@@ -133,13 +150,17 @@ const AiBestCasePage = () => {
     }, []);
 
     const onHandleData = () => {
+        // if(isCopySelected?.length === 3) {
+        //     setIsMessage(
+        //         "이미 3개를 선택했습니다. \n취소 후 다시 선택해 주세요."
+        //     );
+        //     setIsPostEnd(true);
+        //     setIsError(true);
+        //     return
+        // }
         setIsClick(true)
         handleFetchMore()
     }
-
-    // useEffect(() => {
-    //     handleFetchMore();
-    // }, [year, month, doctorId]);
 
     useEffect(() => {
         checkData().then((res) => {
@@ -151,37 +172,44 @@ const AiBestCasePage = () => {
         const aaa = checekdData?.map((v) => ({
             psEntry: v?.psEntry,
             opDate: v?.opDate
+        }));
+        const bbb = firstData?.map(d => ({
+            psEntry: d?.user?.psEntry,
+            opDate: d?.user?.op_data
         }))
-        const arr = new Set([...aaa]);
-        setIsCopySelected([...arr]);
-    }, [checekdData]);
+        const ccc = [...aaa, ...bbb]
+        const uniqueArray = Array.from(
+            new Map(ccc.map((item) => [JSON.stringify(item), item])).values()
+        );
+        setIsCopySelected(uniqueArray);
+    }, [checekdData, firstData]);
 
     useEffect(() => {
         reset({
-        isRandom: data?.map((v: DataType) => ({
-            isBest: data?.length === 3 ? true : isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
-            user: v.user,
-            imgs: {
-            afterImgs: v?.imgs?.afterImgs,
-            beforeImgs: v?.imgs?.beforeImgs,
-            },
-            size: {
-            before: v?.size?.before,
-            after: v?.size?.after,
-            },
-            weight: {
-            before: v?.weight?.before,
-            after: v?.weight?.after,
-            },
-        })),
+            isRandom: data?.map((v: DataType) => ({
+                isBest:isCopySelected?.find(f => f?.psEntry === v?.user?.psEntry && f?.opDate === v?.user?.op_data) ? true : false,
+                user: v?.user,
+                imgs: {
+                afterImgs: v?.imgs?.afterImgs,
+                beforeImgs: v?.imgs?.beforeImgs,
+                },
+                size: {
+                before: v?.size?.before,
+                after: v?.size?.after,
+                },
+                weight: {
+                before: v?.weight?.before,
+                after: v?.weight?.after,
+                },
+            })),
         });
     }, [data, isCopySelected, reset]);
-
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
         <FormProvider {...metods}>
             <div className="flex overflow-hidden flex-col mx-auto w-full h-full items-center max-w-[480px] bg-white shadow-[0_35px_60px_-15px_rgba(0,4,0,0.4)]">
             <Header
+            isAnimating={isAnimating}
                 doctorName={data?.[0]?.user?.doctorName}
                 selectedCount={isCopySelected?.length}
                 prevYear={prevYear}
@@ -196,6 +224,7 @@ const AiBestCasePage = () => {
                 setIsMessage={setIsMessage}
                 setIsPostEnd={setIsPostEnd}
                 setIsError={setIsError}
+                setIsAnimating={setIsAnimating}
             />
             <Footer
                 dataLegth={data?.length}
