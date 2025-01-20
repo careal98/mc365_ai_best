@@ -61,7 +61,7 @@ const AiBestCasePage = () => {
     const fetchData = async (offset: number) => {
         try {
         const response = await fetch(
-            `/api/data/?year=${year}&month=${month}&doctorId=${doctorId}&offset=${offset}&limit=${limit}`,
+            `/api/data?year=${year}&month=${month}&doctorId=${doctorId}&offset=${offset}&limit=${limit}`,
             {
             method: "GET",
             mode: "no-cors",
@@ -96,7 +96,7 @@ const AiBestCasePage = () => {
     const checkData = async () => {
         try {
         const response = await fetch(
-            `/api/check/count/?year=${year}&month=${month}&doctorId=${doctorId}`,
+            `/api/check/count?year=${year}&month=${month}&doctorId=${doctorId}`,
             {
             method: "GET",
             mode: "no-cors",
