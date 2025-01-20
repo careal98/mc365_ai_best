@@ -22,7 +22,7 @@ const Header = ({ doctorName, selectedCount, prevYear, prevMonth }: Props) => {
           {`AI 베스트 리뷰 - ${prevYear}년 ${prevMonth}월`}
         </p>
       </div>
-      <div className="flex items-center gap-x-1">
+      <div className="flex items-center gap-x-1 w-[50px]">
         {/* <button className="text-[#ff6600]"> */}
         <svg className="heart3 w-6 h-6 text-[#ff6600]">
           <use href="/assets/sprite.svg#heart3"></use>
