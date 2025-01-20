@@ -113,11 +113,11 @@ const AiBestCasePage = () => {
         checkData().then((res) => {
         setCheckedData(res);
         });
-    }, []);
+    }, [year, month, doctorId]);
 
     useEffect(() => {
         handleFetchMore();
-    }, []);
+    }, [year, month, doctorId]);
 
     useEffect(() => {
         const arr = new Set(checekdData?.map((v) => v.psEntry));
