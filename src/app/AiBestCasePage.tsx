@@ -73,7 +73,8 @@ const AiBestCasePage = () => {
     };
 
     const handleFetchMore = () => {
-        if (hasMore && !isLoading) {
+        console.log('1212313')
+        // if (hasMore && !isLoading) {
         setIsLoading(true);
         fetchData(data.length)
             .then((newData) => {
@@ -87,7 +88,7 @@ const AiBestCasePage = () => {
             .finally(() => {
             setIsLoading(false);
             });
-        }
+        // }
     };
 
     // 이미 베스트로 선정됐는지 찾는 함수
@@ -111,34 +112,40 @@ const AiBestCasePage = () => {
     const { ref } = useInView({
         initialInView: false,
         onChange: (inView) => {
-        if (inView && hasMore && !isLoading) {
-            setIsLoading(true);
-            handleFetchMore()
-        }
+            if (inView && hasMore && !isLoading) {
+                setIsLoading(true);
+                handleFetchMore()
+            }
         },
     });
-
-    useEffect(() => {
-        checkData().then((res) => {
-        setCheckedData(res);
-        });
-    }, [year, month, doctorId]);
 
     // 처음 3개 데이터 로드
     useEffect(() => {
         fetchData(0).then((newData) => {
             if (newData) {
                 setData(newData);
+                setHasMore(false);
                 if (newData.length < limit) {
-                    setHasMore(false); // 데이터가 3개 미만일 경우 더 이상 데이터를 불러오지 않음
+                    setHasMore(false);
                 }
             }
         });
     }, []);
 
+    const onHandleData = () => {
+        setHasMore(true)
+        handleFetchMore()
+    }
+
     // useEffect(() => {
     //     handleFetchMore();
     // }, [year, month, doctorId]);
+
+    useEffect(() => {
+        checkData().then((res) => {
+        setCheckedData(res);
+        });
+    }, [year, month, doctorId]);
 
     useEffect(() => {
         const aaa = checekdData?.map((v) => ({
@@ -193,7 +200,7 @@ const AiBestCasePage = () => {
             <Footer
                 dataLegth={data?.length}
                 isCopySelected={isCopySelected}
-                handleFetchMore={handleFetchMore}
+                handleFetchMore={onHandleData}
                 setIsPostEnd={setIsPostEnd}
                 setIsMessage={setIsMessage}
                 setIsError={setIsError}

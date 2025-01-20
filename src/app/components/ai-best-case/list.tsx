@@ -229,7 +229,10 @@ const List = forwardRef<HTMLDivElement, ListProps>(
           tip={<p className="pt-1 font-semibold">AI 분석 중...</p>}
           indicator={<LoadingOutlined spin className="text-[#ff6600]" />}
         />
-        <div ref={ref}  style={{ height: '1px' , paddingTop: '4px'}}/>
+        {
+          !isLoading &&
+          <div ref={ref}  style={{ height: '1px' , bottom: '-30px'}}/>
+        }
       </div>
     );
   }
