@@ -144,14 +144,18 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                   const filename = img.slice(4);
                   return (
                     <SwiperSlide key={imgIdx} className="flex w-full gap-x-2">
-                      <Image.PreviewGroup items={newImgs?.map(v => `${imgUrl}${v.slice(4)}`)}>
+                      <Image.PreviewGroup items={newImgs?.map(v => `${imgUrl}${v.slice(4)}`)}
+                        >
                         <div className="flex relative w-full gap-x-2">
                           <Image
                             height={140}
                             src={`${imgUrl}${filename}`}
                             loading="lazy"
                             className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
-                            onError={(e) => (e.currentTarget.src = "/assets/지방이.jpg")}                      
+                            onError={(e) => (e.currentTarget.src = "/assets/지방이.jpg")}
+                            preview={{
+                              maskClassName: 'rounded-xl object-cover',
+                            }}
                           />
                         </div>
                       </Image.PreviewGroup>
