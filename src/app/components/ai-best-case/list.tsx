@@ -143,12 +143,13 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                 {newImgs?.map((img, imgIdx) => {
                   const filename = img.slice(4);
                   return (
-                    <SwiperSlide key={imgIdx} className="flex w-full gap-x-2">
+                    <SwiperSlide key={imgIdx} className="flex w-full">
                       <Image.PreviewGroup items={newImgs?.map(v => `${imgUrl}${v.slice(4)}`)}
                         >
-                        <div className="flex relative w-full gap-x-2">
+                        {/* <div className="flex relative w-full"> */}
                           <Image
                             height={140}
+                            width={'100%'}
                             src={`${imgUrl}${filename}`}
                             loading="lazy"
                             className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
@@ -157,7 +158,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                               maskClassName: 'rounded-xl object-cover',
                             }}
                           />
-                        </div>
+                        {/* </div> */}
                       </Image.PreviewGroup>
                     </SwiperSlide>
                   );
