@@ -26,7 +26,7 @@ const Header = ({ doctorName, selectedCount, prevYear, prevMonth, isAnimating, o
           {`AI 베스트 리뷰 - ${prevYear.toString().slice(2)}년 ${prevMonth}월`}
         </p>
       </div>
-      <button className="flex items-center gap-x-1 w-[50px] hover:opacity-90" onClick={() => setOpen(!open)}>
+      <button className="flex items-center gap-x-1 w-[50px]" onClick={() => setOpen(!open)}>
         {isAnimating ? (
             <img src='/assets/heart6.gif' alt="Heart Animation" width="24" />
           ) : (
