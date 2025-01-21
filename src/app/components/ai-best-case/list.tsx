@@ -9,7 +9,6 @@ import "swiper/css/pagination";
 import { Image, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
-
 import { CheckedType, FormType } from "@/types";
 import { forwardRef } from "react";
 
@@ -146,15 +145,16 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                   return (
                     <SwiperSlide key={imgIdx} className="flex w-full gap-x-2">
                       <Image.PreviewGroup items={newImgs?.map(v => `${imgUrl}${v.slice(4)}`)}>
-                      <div className="flex relative w-full gap-x-2">
-                        <Image
-                          height={140}
-                          src={`${imgUrl}${filename}`}
-                          loading="lazy"
-                          className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
-                          onError={(e) => (e.currentTarget.src = "/assets/지방이.jpg")}                       />
-                      </div>
-                    </Image.PreviewGroup>
+                        <div className="flex relative w-full gap-x-2">
+                          <Image
+                            height={140}
+                            src={`${imgUrl}${filename}`}
+                            loading="lazy"
+                            className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
+                            onError={(e) => (e.currentTarget.src = "/assets/지방이.jpg")}                      
+                          />
+                        </div>
+                      </Image.PreviewGroup>
                     </SwiperSlide>
                   );
                 })}
@@ -177,7 +177,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                           handleHeartClick(fieldIdx, currentId, currentOpDate);
                         }}
                       >
-                        <svg className="heart3 w-7 h-7 ">
+                        <svg className="heart3 w-7 h-7">
                           <use href="/assets/sprite.svg#heart3"></use>
                         </svg>
                       </div>

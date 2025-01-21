@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Footer, Header, List, Noti } from "@/app/components/ai-best-case";
+import { Footer, Header, List, Noti, SelectedList} from "@/app/components/ai-best-case";
 import { CheckedType, DataType, FormType } from "@/types";
 import { FormProvider, useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
@@ -26,6 +26,7 @@ const AiBestCasePage = () => {
     const [isCopySelected, setIsCopySelected] = useState<CheckedType[]>([]);
     const [isClick, setIsClick] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const metods = useForm<FormType>({
         defaultValues: {
@@ -152,7 +153,7 @@ const AiBestCasePage = () => {
     const onHandleData = () => {
         // if(isCopySelected?.length === 3) {
         //     setIsMessage(
-        //         "이미 3개를 선택했습니다. \n취소 후 다시 선택해 주세요."
+        //         "이미 3개를 선택했습니다. \n취소 후 다시 눌러주세요."
         //     );
         //     setIsPostEnd(true);
         //     setIsError(true);
@@ -207,13 +208,15 @@ const AiBestCasePage = () => {
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
         <FormProvider {...metods}>
-            <div className="flex overflow-hidden flex-col mx-auto w-full h-full items-center max-w-[480px] bg-white shadow-[0_35px_60px_-15px_rgba(0,4,0,0.4)]">
+            <div className="flex relative overflow-hidden flex-col mx-auto w-full h-full items-center max-w-[480px] bg-white shadow-[0_35px_60px_-15px_rgba(0,4,0,0.4)]">
             <Header
-            isAnimating={isAnimating}
+                isAnimating={isAnimating}
                 doctorName={data?.[0]?.user?.doctorName}
                 selectedCount={isCopySelected?.length}
                 prevYear={prevYear}
                 prevMonth={prevMonth}
+                open={open}
+                setOpen={setOpen}
             />
             <List
                 ref={ref}
@@ -243,6 +246,7 @@ const AiBestCasePage = () => {
                 isError={isError}
                 setIsError={setIsError}
             />
+            <SelectedList open={open} setOpen={setOpen} />
             </div>
         </FormProvider>
         </Suspense>

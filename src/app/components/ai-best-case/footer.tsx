@@ -77,18 +77,18 @@ const Footer = ({
   };
 
   return (
-    <div className="w-full h-[80px] bg-white px-4 py-3 items-center flex justify-between gap-2 shadow-md">
+    <div className="w-full h-[80px] bg-white px-4 items-center flex justify-between gap-2 shadow-md">
       {
         dataLegth <= 3 &&
       <button
-      className="border-[1px] w-full py-3 rounded-lg border-[#ff6600]"
+      className="border-[1px] w-full py-3 rounded-lg border-[#ff6600] shadow-md"
       onClick={handleFetchMore}
       >
         <p className="text-[17px] text-gray-700 font-bold">다른 수술 찾기</p>
       </button>
       } 
       <button
-        className="border-[1px] w-full py-3 rounded-lg border-[#ff6600] bg-[#ff6600]"
+        className="border-[1px] w-full py-3 rounded-lg border-[#ff6600] bg-[#ff6600] shadow-md"
         onClick={() => onPostSelected()}
       >
         <p className="text-[17px] text-white font-bold">
