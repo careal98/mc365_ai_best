@@ -27,7 +27,7 @@ const SelectedList = ({ open, setOpen } :Props) => {
             }} 
             className={`tooltip w-full px-3 top-[45px] z-10 ${open ? 'absolute' : 'hidden'}`}
         >
-            <div className="w-full bg-[#FAE7DE] border-[2px] border-[#ff6600] rounded-2xl px-3 py-2">
+            <div className="w-full bg-[#FEFAF8] border-[2px] border-[#ff6600] rounded-2xl px-3 py-2">
                 {
                     isBest?.length !== 0 ?
                     isBest?.map(b => {
@@ -36,7 +36,7 @@ const SelectedList = ({ open, setOpen } :Props) => {
                         const size = b?.size;
 
                         return (
-                            <div key={user?.psEntry} className="grid grid-cols-2 bg-[rgba(255,102,0,0.18)] rounded-lg my-1 px-2 py-1 shadow-sm">
+                            <div key={user?.psEntry} className="grid grid-cols-2 bg-[rgba(255,102,0,0.17)] rounded-lg my-1 px-2 py-1 shadow-sm">
                                 <div className="flex items-center">
                                     <p className="text-[12px] pr-1 text-gray-700">고객:</p>
                                     <p className="text-[13px] font-medium text-gray-800">
