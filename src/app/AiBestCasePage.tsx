@@ -205,6 +205,7 @@ const AiBestCasePage = () => {
             })),
         });
     }, [data, isCopySelected, reset]);
+    
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
         <FormProvider {...metods}>
