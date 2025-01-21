@@ -237,6 +237,7 @@ const AiBestCasePage = () => {
                 setIsMessage={setIsMessage}
                 setIsError={setIsError}
                 doctorId={doctorId ?? ""}
+                setOpen={setOpen}
             />
             <Noti
                 key={`${JSON.stringify(isPostEnd)}}`}

@@ -15,9 +15,16 @@ const SelectedList = ({ open, setOpen } :Props) => {
 
     return(
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: open ? 1 : 0 }}
-            transition={{ duration: .5 }} 
+            initial={{ 
+                opacity: 0,
+            }}
+            animate={{ 
+                opacity: open ? 1 : 0,
+            }}
+            transition={{ 
+                duration: .7,
+                type: 'spring',
+            }} 
             className={`tooltip w-full px-3 top-[45px] z-10 ${open ? 'absolute' : 'hidden'}`}
         >
             <div className="w-full bg-[#FAE7DE] border-[2px] border-[#ff6600] rounded-2xl px-3 py-2">

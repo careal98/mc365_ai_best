@@ -11,6 +11,7 @@ interface Props {
   isCopySelected: CheckedType[];
   doctorId: string;
   dataLegth: number;
+  setOpen: (v: boolean) => void;
 }
 
 const Footer = ({
@@ -20,7 +21,8 @@ const Footer = ({
   setIsError,
   isCopySelected,
   doctorId,
-  dataLegth
+  dataLegth,
+  setOpen
 }: Props) => {
   const { watch } = useFormContext<FormType>();
   const isRandom = watch()?.isRandom;
@@ -74,6 +76,7 @@ const Footer = ({
       });
     setIsPostEnd(false);
     setIsPostEnd(false);
+    setOpen(false)
   };
 
   return (
