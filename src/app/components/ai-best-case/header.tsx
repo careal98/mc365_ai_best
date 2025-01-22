@@ -28,7 +28,7 @@ const Header = ({ doctorName, selectedCount, prevYear, prevMonth, isAnimating, o
       </div>
       <button className="flex items-center gap-x-1 w-[50px] cursor-pointer" onClick={() => setOpen(!open)}>
         {isAnimating ? (
-            <img src='/assets/heart10.gif' alt="Heart Animation" width="24" />
+            <img src='/assets/heart6.gif' alt="Heart Animation" width="24" />
           ) : (
             <svg className="heart3 w-6 h-6 text-[#ff6600]">
             <use href="/assets/sprite.svg#heart3"></use>
