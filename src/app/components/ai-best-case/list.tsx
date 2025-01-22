@@ -236,6 +236,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
         })}
         {isLoading && <Skeletons />}
         <Spin
+          key={JSON.stringify(isLoading)}
           spinning={isLoading}
           fullscreen
           size="large"
