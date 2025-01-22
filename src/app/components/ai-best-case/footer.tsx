@@ -73,7 +73,7 @@ const Footer = ({
         setTimeout(() => {
           setIsPostEnd(true);
           setIsMessage("베스트 리뷰로 선정했습니다.");
-        }, 750);
+        }, 800);
       })
       .catch((error) => {
         setTimeout(() => {
@@ -81,7 +81,7 @@ const Footer = ({
           setIsPostEnd(true);
           setIsError(true);
           setIsMessage("베스트 리뷰 선정을 실패했습니다.");
-        }, 750);
+        }, 800);
       });
     setIsPostEnd(false);
     setIsPostEnd(false);
@@ -92,7 +92,7 @@ const Footer = ({
     if(isHeartClick){
       setTimeout(() => {
         setIsHeartClick(false);
-      }, 800);
+      }, 1000);
     }
   }, [isHeartClick]);
 
