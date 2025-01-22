@@ -26,7 +26,7 @@ const Footer = ({
   dataLegth,
   setOpen
 }: Props) => {
-  const [isHeartClick, setisHeartClick] = useState(false);
+  const [isHeartClick, setIsHeartClick] = useState(false);
 
   const { watch } = useFormContext<FormType>();
   const isRandom = watch()?.isRandom;
@@ -35,6 +35,7 @@ const Footer = ({
 
   // 베스트 선정하기
   const onPostSelected = () => {
+    setIsHeartClick(true);
     const isTrue =  isBest?.filter((v) =>
       isCopySelected?.find(f => f.psEntry === v?.user?.psEntry && f.opDate === v?.user?.op_data)
     );
@@ -69,14 +70,12 @@ const Footer = ({
     })
       .then((response) => response.json())
       .then(() => {
-        setisHeartClick(true);
         setTimeout(() => {
           setIsPostEnd(true);
           setIsMessage("베스트 리뷰로 선정했습니다.");
         }, 750);
       })
       .catch((error) => {
-        setisHeartClick(true);
         setTimeout(() => {
           console.error("Error sending data:", error);
           setIsPostEnd(true);
@@ -92,7 +91,7 @@ const Footer = ({
   useEffect(() => {
     if(isHeartClick){
       setTimeout(() => {
-        setisHeartClick(false);
+        setIsHeartClick(false);
       }, 800);
     }
   }, [isHeartClick]);
