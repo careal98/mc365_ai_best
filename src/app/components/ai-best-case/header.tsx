@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 interface Props {
   doctorName: string;
   selectedCount: number;
@@ -15,10 +16,8 @@ const Header = ({ doctorName, selectedCount, prevYear, prevMonth, isAnimating, o
   return (
     <div className="py-3 px-4 w-full flex justify-between shadow-md items-center">
       <div className="flex items-center gap-x-1">
-        <img
-          src="/assets/doctor.png"
-          className="w-6 h-6 border-[1px] border-gray-400 rounded-full"
-        />
+        <Image
+          src="/assets/doctor.png" className="w-6 h-6 border-[1px] border-gray-400 rounded-full" width="24" height="24" alt="Doctor" />
         <p className="text-[14px] text-gray-700 font-semibold">{doctorName}</p>
       </div>
       <div className="flex items-center">
@@ -28,7 +27,7 @@ const Header = ({ doctorName, selectedCount, prevYear, prevMonth, isAnimating, o
       </div>
       <button className="flex items-center gap-x-1 w-[50px]" onClick={() => setOpen(!open)}>
         {isAnimating ? (
-            <img src='/assets/heart6.gif' alt="Heart Animation" width="24" />
+            <Image src='/assets/heart6.gif' alt="Heart Animation" width="24" height="24" />
           ) : (
             <svg className="heart3 w-6 h-6 text-[#ff6600]">
             <use href="/assets/sprite.svg#heart3"></use>
