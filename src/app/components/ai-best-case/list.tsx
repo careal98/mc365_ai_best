@@ -112,7 +112,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
         
       setTimeout(() => {
           setIsAnimating(false);
-      }, 1800); 
+      }, 1900); 
     };
 
     return (

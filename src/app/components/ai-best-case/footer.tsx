@@ -1,6 +1,8 @@
 "use client";
 
 import { CheckedType, FormType } from "@/types";
+import { Spin } from "antd";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface Props {
@@ -24,6 +26,8 @@ const Footer = ({
   dataLegth,
   setOpen
 }: Props) => {
+  const [isHeartClick, setisHeartClick] = useState(false);
+
   const { watch } = useFormContext<FormType>();
   const isRandom = watch()?.isRandom;
   const isBest = isRandom?.filter((v) => v?.isBest);
@@ -65,19 +69,33 @@ const Footer = ({
     })
       .then((response) => response.json())
       .then(() => {
-        setIsPostEnd(true);
-        setIsMessage("베스트 리뷰로 선정했습니다.");
+        setisHeartClick(true);
+        setTimeout(() => {
+          setIsPostEnd(true);
+          setIsMessage("베스트 리뷰로 선정했습니다.");
+        }, 750);
       })
       .catch((error) => {
-        console.error("Error sending data:", error);
-        setIsPostEnd(true);
-        setIsError(true);
-        setIsMessage("베스트 리뷰 선정을 실패했습니다.");
+        setisHeartClick(true);
+        setTimeout(() => {
+          console.error("Error sending data:", error);
+          setIsPostEnd(true);
+          setIsError(true);
+          setIsMessage("베스트 리뷰 선정을 실패했습니다.");
+        }, 750);
       });
     setIsPostEnd(false);
     setIsPostEnd(false);
     setOpen(false)
   };
+
+  useEffect(() => {
+    if(isHeartClick){
+      setTimeout(() => {
+        setisHeartClick(false);
+      }, 800);
+    }
+  }, [isHeartClick]);
 
   return (
     <div className="w-full bg-white items-center flex justify-between shadow-md">
@@ -98,6 +116,14 @@ const Footer = ({
           {dataLegth <= 3  ? '선정하기' : '베스트 리뷰 선정하기'}
         </p>
       </button>
+      <Spin
+          key={`isHeartClick_${JSON.stringify(isHeartClick)}`}
+          spinning={isHeartClick}
+          fullscreen
+          size="large"
+          rootClassName="max-w-[480px] mx-auto"
+          indicator={<img src='/assets/heart10.gif' alt="Heart Animation" width="24" />}
+        />
     </div>
   );
 };
