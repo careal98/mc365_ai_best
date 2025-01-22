@@ -77,6 +77,7 @@ const AiBestCasePage = () => {
     };
 
     const handleFetchMore = () => {
+        setIsClick(true);
         if (isClick && hasMore && !isLoading) {
             setIsLoading(true);
             fetchData(data.length).then((newData) => {
@@ -140,7 +141,6 @@ const AiBestCasePage = () => {
                         },
                     })));
                     setData(newData);
-                    setIsClick(true);
                     if (newData.length < limit) {
                         setHasMore(false); 
                     }
@@ -162,7 +162,6 @@ const AiBestCasePage = () => {
         // }
         handleFetchMore()
     }
-    console.log(isClick)
 
     useEffect(() => {
         checkData().then((res) => {
