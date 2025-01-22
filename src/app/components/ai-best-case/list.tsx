@@ -173,7 +173,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                     return (
                       <div
                         {...field}
-                        className={`${
+                        className={`cursor-pointer ${
                           value === true ? "text-[#ff6600]" : "text-gray-400"
                         }`}
                         onClick={() => {
