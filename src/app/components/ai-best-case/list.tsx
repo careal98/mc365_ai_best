@@ -23,7 +23,7 @@ interface ListProps {
   setIsAnimating: (v: boolean) => void;
 }
 
-const imgUrl = 'https://mc365-backup.synology.me:8081/thumb/480/surgery';
+const imgUrl = "https://mc365-backup.synology.me:8081/thumb/480/surgery";
 
 const List = forwardRef<HTMLDivElement, ListProps>(
   (
@@ -34,7 +34,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
       setIsError,
       isCopySelected,
       setIsCopySelected,
-      setIsAnimating
+      setIsAnimating,
     }: ListProps,
     ref
   ) => {
@@ -65,8 +65,14 @@ const List = forwardRef<HTMLDivElement, ListProps>(
     //   });
     // }, [checkData]);
 
-    const handleHeartClick = (fieldIdx: number, currentId: string, currentOpDate: string) => {
-      const isAlreadyChecked = isCopySelected.find(f => f.psEntry === currentId && f.opDate === currentOpDate);
+    const handleHeartClick = (
+      fieldIdx: number,
+      currentId: string,
+      currentOpDate: string
+    ) => {
+      const isAlreadyChecked = isCopySelected.find(
+        (f) => f.psEntry === currentId && f.opDate === currentOpDate
+      );
       if (isAlreadyChecked) {
         // const aaa = watch()?.isRandom?.filter(
         //   (v) => v?.user?.psEntry === currentId && v?.user?.op_data === currentOpDate
@@ -85,7 +91,11 @@ const List = forwardRef<HTMLDivElement, ListProps>(
         //   });
         // }
         setValue(`isRandom.${fieldIdx}.isBest`, false);
-        setIsCopySelected((prev) => prev.filter((p) => !(p.psEntry === currentId && p.opDate === currentOpDate)));
+        setIsCopySelected((prev) =>
+          prev.filter(
+            (p) => !(p.psEntry === currentId && p.opDate === currentOpDate)
+          )
+        );
         setIsPostEnd(false);
         setIsError(false);
       } else {
@@ -100,19 +110,23 @@ const List = forwardRef<HTMLDivElement, ListProps>(
           //   ...fields[fieldIdx],
           //   isBest: true,
           // });
-             // });
+          // });
           setValue(`isRandom.${fieldIdx}.isBest`, true);
-          setIsCopySelected((prev) => prev ? [...prev, {psEntry: currentId, opDate: currentOpDate}] : [{psEntry: currentId, opDate: currentOpDate}]);
+          setIsCopySelected((prev) =>
+            prev
+              ? [...prev, { psEntry: currentId, opDate: currentOpDate }]
+              : [{ psEntry: currentId, opDate: currentOpDate }]
+          );
           setIsPostEnd(false);
           setIsError(false);
         }
       }
 
       setIsAnimating(true);
-        
+
       setTimeout(() => {
-          setIsAnimating(false);
-      }, 1900); 
+        setIsAnimating(false);
+      }, 1900);
     };
 
     return (
@@ -144,20 +158,23 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                   const filename = img.slice(4);
                   return (
                     <SwiperSlide key={imgIdx} className="flex w-full">
-                      <Image.PreviewGroup items={newImgs?.map(v => `${imgUrl}${v.slice(4)}`)}
-                        >
+                      <Image.PreviewGroup
+                        items={newImgs?.map((v) => `${imgUrl}${v.slice(4)}`)}
+                      >
                         {/* <div className="flex relative w-full"> */}
-                          <Image
-                            height={140}
-                            width={'100%'}
-                            src={`${imgUrl}${filename}`}
-                            loading="lazy"
-                            className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
-                            onError={(e) => (e.currentTarget.src = "/assets/지방이.jpg")}
-                            preview={{
-                              maskClassName: 'rounded-xl object-cover',
-                            }}
-                          />
+                        <Image
+                          height={140}
+                          width={"100%"}
+                          src={`${imgUrl}${filename}`}
+                          loading="lazy"
+                          className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
+                          onError={(e) =>
+                            (e.currentTarget.src = "/assets/지방이.jpg")
+                          }
+                          preview={{
+                            maskClassName: "rounded-xl object-cover",
+                          }}
+                        />
                         {/* </div> */}
                       </Image.PreviewGroup>
                     </SwiperSlide>
@@ -178,7 +195,8 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                         }`}
                         onClick={() => {
                           const currentId = fields?.[fieldIdx]?.user?.psEntry;
-                          const currentOpDate = fields?.[fieldIdx]?.user?.op_data;
+                          const currentOpDate =
+                            fields?.[fieldIdx]?.user?.op_data;
                           handleHeartClick(fieldIdx, currentId, currentOpDate);
                         }}
                       >
@@ -244,10 +262,9 @@ const List = forwardRef<HTMLDivElement, ListProps>(
           tip={<p className="pt-1 font-semibold">AI 분석 중...</p>}
           indicator={<LoadingOutlined spin className="text-[#ff6600]" />}
         />
-        {
-          !isLoading &&
-          <div ref={ref}  style={{ height: '1px' , bottom: '-30px'}}/>
-        }
+        {!isLoading && (
+          <div ref={ref} style={{ height: "1px", bottom: "-30px" }} />
+        )}
       </div>
     );
   }
