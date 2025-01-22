@@ -139,7 +139,8 @@ const AiBestCasePage = () => {
                         after: n?.weight?.after,
                         },
                     })));
-                    setData(newData)
+                    setData(newData);
+                    setIsClick(true);
                     if (newData.length < limit) {
                         setHasMore(false); 
                     }
@@ -159,9 +160,9 @@ const AiBestCasePage = () => {
         //     setIsError(true);
         //     return
         // }
-        setIsClick(true)
         handleFetchMore()
     }
+    console.log(isClick)
 
     useEffect(() => {
         checkData().then((res) => {
