@@ -167,7 +167,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                           width={"100%"}
                           src={`${imgUrl}${filename}`}
                           loading="lazy"
-                          className="w-full h-[140px] border-gray-300 rounded-lg border-[1px] object-cover"
+                          className="w-full h-[140px] rounded-lg object-cover"
                           onError={(e) =>
                             (e.currentTarget.src = "/assets/지방이.jpg")
                           }
