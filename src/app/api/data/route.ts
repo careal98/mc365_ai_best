@@ -46,28 +46,25 @@ export async function GET(req: Request) {
         const results: any[] = await queryDB(baseSql);
         // QueryResult 타입에서 rows로 데이터 추출
         // const rows: any = 'rows' in results ? results.rows : [];
-
         const info: UserInfo[] = results.map((result: any) => ({
             psEntry: result.Psentry,
             opDate: result.Op_Date,
             part: result.Surgical_Site,
         }));
-
         // AI가 선정한 수술의 psEntry로 사진 추출
         const afterRows: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
-            SELECT PATH, top1 FROM IMAGE_SECTION_INFO
-            WHERE surgeryID = ${Number(i1.psEntry)}
-                AND confidence1 >= ${confidence1}
-                AND op_data > ${Number(i1.opDate)}
-            ORDER BY op_data, top1
-            `;
+                            SELECT PATH, top1 FROM IMAGE_SECTION_INFO
+                            WHERE surgeryID = ${Number(i1.psEntry)}
+                                AND confidence1 >= ${confidence1}
+                                AND op_data > ${Number(i1.opDate)}
+                            ORDER BY op_data, top1
+                            `;
                 const afterRowsResult = await queryDB(sql);
                 return afterRowsResult;
             })
         );
-
         const imgs = await Promise.all(
             info.map(async (aRow, aRowIdx) => {
                 const beforeImgs: string[] = [];
@@ -76,13 +73,16 @@ export async function GET(req: Request) {
                     afterRows?.[aRowIdx]?.map(
                         async (row: any, rowIdx: number) => {
                             const sql = `
-                SELECT PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-                WHERE surgeryID = ${Number(aRow.psEntry)}
-                    AND op_data <= ${Number(aRow.opDate)}
-                    AND top1 = ${row.top1}
-                `;
+                                        SELECT PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                        WHERE surgeryID = ${Number(
+                                            aRow.psEntry
+                                        )}
+                                            AND op_data <= ${Number(
+                                                aRow.opDate
+                                            )}
+                                            AND top1 = ${row.top1}
+                                        `;
                             const imgRowsResult = await queryDB(sql);
-
                             const imgRows: any = imgRowsResult;
                             if (imgRows.length > 0) {
                                 beforeImgs.push(
@@ -100,32 +100,31 @@ export async function GET(req: Request) {
                 return { beforeImgs, afterImgs };
             })
         );
-
         // 고객 정보
         const userRows: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
-                    SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT
-                    FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S
-                    WHERE L.고객번호 = '${i1.psEntry}'
-                        AND L.수술일자 = '${i1.opDate}'
-                        AND L.메인부위명 = '${i1.part}'
-                        AND L.고객번호 = S.고객번호
-                        AND L.수술일자 = S.수술일자
-                        AND EXISTS (
-                        SELECT TOP 1 * FROM (
-                            SELECT * FROM IMAGE_SECTION_INFO AS I
-                            WHERE L.고객번호 = I.surgeryID
-                            AND L.수술일자 >= I.op_data
-                            AND confidence1 >= ${confidence1}
-                        ) AS IB, (
-                            SELECT * FROM IMAGE_SECTION_INFO AS I
-                            WHERE L.고객번호 = I.surgeryID
-                            AND L.수술일자 < I.op_data
-                            AND confidence1 >= ${confidence1}
-                        ) AS IA
-                        WHERE IB.top1 = IA.top1
-                    )`;
+                            SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT
+                            FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S
+                            WHERE L.고객번호 = '${i1.psEntry}'
+                                AND L.수술일자 = '${i1.opDate}'
+                                AND L.고객번호 = S.고객번호
+                                AND L.수술일자 = S.수술일자
+                                AND L.메인부위명 = '${i1.part}'
+                                AND EXISTS (
+                                SELECT TOP 1 * FROM (
+                                    SELECT * FROM IMAGE_SECTION_INFO AS I
+                                    WHERE L.고객번호 = I.surgeryID
+                                    AND L.수술일자 >= I.op_data
+                                    AND confidence1 >= ${confidence1}
+                                ) AS IB, (
+                                    SELECT * FROM IMAGE_SECTION_INFO AS I
+                                    WHERE L.고객번호 = I.surgeryID
+                                    AND L.수술일자 < I.op_data
+                                    AND confidence1 >= ${confidence1}
+                                ) AS IA
+                                WHERE IB.top1 = IA.top1
+                            )`;
                 //  const sql = `
                 // SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT
                 // FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S
