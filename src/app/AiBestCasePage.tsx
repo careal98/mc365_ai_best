@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+    AlreadyList,
     DrawerClickSelected,
     Footer,
     Header,
@@ -25,7 +26,7 @@ const AiBestCasePage = () => {
 
     const [data, setData] = useState<DataType[]>([]);
     const [firstData, setFirstData] = useState<DataType[]>([]);
-    const [checekdData, setCheckedData] = useState<CheckedType[]>([]);
+    const [checkedData, setCheckedData] = useState<CheckedType[]>([]);
     const [isCopySelected, setIsCopySelected] = useState<CheckedType[]>([]);
     const [isTotalCount, setIsTotalCount] = useState(0);
     const [isIndex, setIsIndex] = useState(0);
@@ -148,7 +149,7 @@ const AiBestCasePage = () => {
         }
     };
 
-    // 데이터 가져오기 함수
+    // 전체 카운트 함수
     const checkTotalData = async () => {
         try {
             const response = await fetch(
@@ -234,20 +235,20 @@ const AiBestCasePage = () => {
     }, [year, month, doctorId]);
 
     useEffect(() => {
-        const aaa = checekdData?.map((v) => ({
-            psEntry: v?.psEntry,
-            opDate: v?.opDate,
-        }));
+        // const aaa = checkedData?.map((v) => ({
+        //     psEntry: v?.psEntry,
+        //     opDate: v?.opDate,
+        // }));
         const bbb = firstData?.map((d) => ({
             psEntry: d?.user?.psEntry,
             opDate: d?.user?.op_data,
         }));
-        const ccc = [...aaa, ...bbb];
+        const ccc = [...bbb];
         const uniqueArray = Array.from(
             new Map(ccc.map((item) => [JSON.stringify(item), item])).values()
         );
         setIsCopySelected(uniqueArray);
-    }, [checekdData, firstData]);
+    }, [checkedData, firstData]);
 
     useEffect(() => {
         reset({
@@ -295,48 +296,54 @@ const AiBestCasePage = () => {
                         />
                     ) : (
                         <>
-                            {data?.length > 3 && (
-                                <div className="absolute bottom-14 left-[46%] z-50 bg-gray-400/30 rounded-lg px-1 py-1">
-                                    <p className="text-[12px] font-medium text-gray-700">{`${isIndex}/${isTotalCount}`}</p>
-                                </div>
-                            )}
-                            <List
-                                ref={ref}
-                                isCopySelected={isCopySelected}
-                                setIsCopySelected={setIsCopySelected}
-                                selectedData={checekdData}
-                                isLoading={isLoading}
-                                setIsMessage={setIsMessage}
-                                setIsPostEnd={setIsPostEnd}
-                                setIsError={setIsError}
-                                setIsAnimating={setIsAnimating}
-                            />
-                            <Footer
-                                handleFetchMore={onHandleData}
-                                dataLegth={data?.length}
-                                setIsModalOpen={setIsModalOpen}
-                            />
-                            <Noti
-                                key={`${JSON.stringify(isPostEnd)}}`}
-                                isOpen={isPostEnd}
-                                setIsPostEnd={setIsPostEnd}
-                                isMessage={isMessage}
-                                isError={isError}
-                                setIsError={setIsError}
-                            />
-                            <SelectedList open={open} setOpen={setOpen} />
-                            <DrawerClickSelected
-                                open={isModalopen}
-                                setOpen={setOpen}
-                                isCopySelected={isCopySelected}
-                                setIsPostEnd={setIsPostEnd}
-                                setIsMessage={setIsMessage}
-                                setIsError={setIsError}
-                                doctorId={doctorId ?? ""}
-                                setIsModalOpen={setIsModalOpen}
-                                setIsSelectedConfirm={setIsSelectedConfirm}
-                            />
-                            {/* <ClickSelected
+                            {checkedData?.length === 0 ? (
+                                <>
+                                    {data?.length > 3 && (
+                                        <div className="absolute bottom-14 left-[46%] z-50 bg-gray-400/30 rounded-lg px-1 py-1">
+                                            <p className="text-[12px] font-medium text-gray-700">{`${isIndex}/${isTotalCount}`}</p>
+                                        </div>
+                                    )}
+                                    <List
+                                        ref={ref}
+                                        isCopySelected={isCopySelected}
+                                        setIsCopySelected={setIsCopySelected}
+                                        isLoading={isLoading}
+                                        setIsMessage={setIsMessage}
+                                        setIsPostEnd={setIsPostEnd}
+                                        setIsError={setIsError}
+                                        setIsAnimating={setIsAnimating}
+                                    />
+                                    <Footer
+                                        handleFetchMore={onHandleData}
+                                        dataLegth={data?.length}
+                                        setIsModalOpen={setIsModalOpen}
+                                    />
+                                    <Noti
+                                        key={`${JSON.stringify(isPostEnd)}}`}
+                                        isOpen={isPostEnd}
+                                        setIsPostEnd={setIsPostEnd}
+                                        isMessage={isMessage}
+                                        isError={isError}
+                                        setIsError={setIsError}
+                                    />
+                                    <SelectedList
+                                        open={open}
+                                        setOpen={setOpen}
+                                    />
+                                    <DrawerClickSelected
+                                        open={isModalopen}
+                                        setOpen={setOpen}
+                                        isCopySelected={isCopySelected}
+                                        setIsPostEnd={setIsPostEnd}
+                                        setIsMessage={setIsMessage}
+                                        setIsError={setIsError}
+                                        doctorId={doctorId ?? ""}
+                                        setIsModalOpen={setIsModalOpen}
+                                        setIsSelectedConfirm={
+                                            setIsSelectedConfirm
+                                        }
+                                    />
+                                    {/* <ClickSelected
                                 open={isModalopen}
                                 setOpen={setOpen}
                                 isCopySelected={isCopySelected}
@@ -347,6 +354,22 @@ const AiBestCasePage = () => {
                                 setIsModalOpen={setIsModalOpen}
                                 setIsSelectedConfirm={setIsSelectedConfirm}
                             /> */}
+                                </>
+                            ) : (
+                                // ) : (
+                                //     <AlreadyList
+                                //         ref={ref}
+                                //         isCopySelected={isCopySelected}
+                                //         setIsCopySelected={setIsCopySelected}
+                                //         isLoading={isLoading}
+                                //         setIsMessage={setIsMessage}
+                                //         setIsPostEnd={setIsPostEnd}
+                                //         setIsError={setIsError}
+                                //         setIsAnimating={setIsAnimating}
+                                //     />
+                                // )
+                                <AlreadyList />
+                            )}
                         </>
                     )}
                 </div>

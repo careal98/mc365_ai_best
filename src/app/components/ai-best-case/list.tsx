@@ -20,7 +20,6 @@ interface ListProps {
     setIsPostEnd: (v: boolean) => void;
     setIsError: (v: boolean) => void;
     setIsMessage: (v: string) => void;
-    selectedData: CheckedType[];
     setIsAnimating: (v: boolean) => void;
 }
 

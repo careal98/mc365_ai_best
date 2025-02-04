@@ -20,28 +20,29 @@ export async function GET(req: Request) {
         const confidence1 = 0.7;
         // AI가 선정한 사진에 해당하는 수술 정보
         const baseSql = `
-        SELECT * 
-        FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
-        WHERE Year = ${Number(year)} 
-            AND Month = ${Number(month)}
-            AND Doctor_Id = '${doctorId}'
-            AND EXISTS (
-                SELECT 1 
-                FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO AS I
-                WHERE CONVERT(VARCHAR, A.Psentry) = I.surgeryID
-                AND A.Op_Date >= I.op_data
-                AND A.Surgical_Site COLLATE Korean_Wansung_CI_AS = I.section COLLATE Korean_Wansung_CI_AS
-            )
-            AND EXISTS (
-                SELECT 1 
-                FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO AS I
-                WHERE CONVERT(VARCHAR, A.Psentry) = I.surgeryID
-                AND A.Op_Date < I.op_data
-                AND A.Surgical_Site COLLATE Korean_Wansung_CI_AS = I.section COLLATE Korean_Wansung_CI_AS
-            )
-        ORDER BY RANK ASC, Op_Date DESC
-        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
-        `;
+                        SELECT DISTINCT A.*
+                        FROM 
+                            tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
+                        INNER JOIN 
+                            tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
+                            ON CONVERT(VARCHAR, A.Psentry) = I1.surgeryID
+                            AND A.Op_Date >= I1.op_data
+                        INNER JOIN 
+                            tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
+                            ON CONVERT(VARCHAR, A.Psentry) = I2.surgeryID
+                            AND A.Op_Date < I2.op_data
+                        LEFT JOIN 
+                            tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE M
+                            ON A.Psentry COLLATE Korean_Wansung_CI_AS = M.고객번호 COLLATE Korean_Wansung_CI_AS
+                            AND A.Op_Date COLLATE Korean_Wansung_CI_AS = M.OPDATE COLLATE Korean_Wansung_CI_AS
+                        WHERE 
+                            A.Year = ${year}
+                            AND A.Month = ${month}
+                            AND A.Doctor_Id = '${doctorId}'
+                            AND M.고객번호 IS NULL
+                        ORDER BY A.RANK DESC, A.Op_Date DESC 
+                        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+                        `;
         const results: any[] = await queryDB(baseSql);
         // QueryResult 타입에서 rows로 데이터 추출
         // const rows: any = 'rows' in results ? results.rows : [];
@@ -55,26 +56,11 @@ export async function GET(req: Request) {
         // AI가 선정한 수술의 psEntry로 사진 추출
         const afterRows: any[] = await Promise.all(
             info.map(async (i1) => {
-                const part = i1.part;
-                let parts;
-                if (part === "힙업" || part === "힙") {
-                    parts = `section = '엉덩이' OR section = '${part}'`;
-                } else if (part === "복부") {
-                    parts = `section = '러브핸들' OR section = '${part}'`;
-                } else if (part === "허벅지") {
-                    parts = `section = '허파고리' OR section = '${part}'`;
-                } else {
-                    parts = `section = '${part}'`;
-                }
                 const sql = `
             SELECT PATH, top1 FROM IMAGE_SECTION_INFO
             WHERE surgeryID = ${Number(i1.psEntry)}
                 AND confidence1 >= ${confidence1}
                 AND op_data > ${Number(i1.opDate)}
-                AND (
-                (section = '전신' OR section = 'null' OR section IS NULL)
-                OR ${parts}
-                )
             ORDER BY op_data, top1
             `;
                 const afterRowsResult = await queryDB(sql);
@@ -119,42 +105,64 @@ export async function GET(req: Request) {
         const userRows: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
-            SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT 
-            FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S 
-            WHERE L.고객번호 = '${i1.psEntry}' 
-                AND L.수술일자 = '${i1.opDate}' 
-                AND L.메인부위명 = '${i1.part}' 
-                AND L.고객번호 = S.고객번호 
-                AND L.수술일자 = S.수술일자 
-                AND L.메인부위명 = S.메인부위명 
-                AND EXISTS (
-                SELECT TOP 1 * FROM (
-                    SELECT * FROM IMAGE_SECTION_INFO AS I 
-                    WHERE L.고객번호 = I.surgeryID 
-                    AND L.수술일자 >= I.op_data 
-                    AND confidence1 >= ${confidence1} 
-                    AND (
-                        (I.section = '전신' OR I.section = 'null' OR I.section IS NULL) 
-                        OR (I.section = '엉덩이' AND (L.메인부위명 = '힙업' OR L.메인부위명 = '힙'))
-                        OR (I.section = '러브핸들' AND L.메인부위명 = '복부')
-                        OR (I.section = '허파고리' AND L.메인부위명 = '허벅지') 
-                        OR L.메인부위명 = I.section COLLATE Korean_Wansung_CI_AS
-                    )
-                ) AS IB, (
-                    SELECT * FROM IMAGE_SECTION_INFO AS I 
-                    WHERE L.고객번호 = I.surgeryID 
-                    AND L.수술일자 < I.op_data 
-                    AND confidence1 >= ${confidence1} 
-                    AND (
-                        (I.section = '전신' OR I.section = 'null' OR I.section IS NULL) 
-                        OR (I.section = '엉덩이' AND (L.메인부위명 = '힙업' OR L.메인부위명 = '힙'))
-                        OR (I.section = '러브핸들' AND L.메인부위명 = '복부')
-                        OR (I.section = '허파고리' AND L.메인부위명 = '허벅지') 
-                        OR L.메인부위명 = I.section COLLATE Korean_Wansung_CI_AS
-                    )
-                ) AS IA
-                WHERE IB.top1 = IA.top1
-            )`;
+                    SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT
+                    FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S
+                    WHERE L.고객번호 = '${i1.psEntry}'
+                        AND L.수술일자 = '${i1.opDate}'
+                        AND L.메인부위명 = '${i1.part}'
+                        AND L.고객번호 = S.고객번호
+                        AND L.수술일자 = S.수술일자
+                        AND EXISTS (
+                        SELECT TOP 1 * FROM (
+                            SELECT * FROM IMAGE_SECTION_INFO AS I
+                            WHERE L.고객번호 = I.surgeryID
+                            AND L.수술일자 >= I.op_data
+                            AND confidence1 >= ${confidence1}
+                        ) AS IB, (
+                            SELECT * FROM IMAGE_SECTION_INFO AS I
+                            WHERE L.고객번호 = I.surgeryID
+                            AND L.수술일자 < I.op_data
+                            AND confidence1 >= ${confidence1}
+                        ) AS IA
+                        WHERE IB.top1 = IA.top1
+                    )`;
+                //  const sql = `
+                // SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT
+                // FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S
+                // WHERE L.고객번호 = '${i1.psEntry}'
+                //     AND L.수술일자 = '${i1.opDate}'
+                //     AND L.메인부위명 = '${i1.part}'
+                //     AND L.고객번호 = S.고객번호
+                //     AND L.수술일자 = S.수술일자
+                //     AND L.메인부위명 = S.메인부위명
+                //     AND EXISTS (
+                //     SELECT TOP 1 * FROM (
+                //         SELECT * FROM IMAGE_SECTION_INFO AS I
+                //         WHERE L.고객번호 = I.surgeryID
+                //         AND L.수술일자 >= I.op_data
+                //         AND confidence1 >= ${confidence1}
+                //         AND (
+                //             (I.section = '전신' OR I.section = 'null' OR I.section IS NULL)
+                //             OR (I.section = '엉덩이' AND (L.메인부위명 = '힙업' OR L.메인부위명 = '힙'))
+                //             OR (I.section = '러브핸들' AND L.메인부위명 = '복부')
+                //             OR (I.section = '허파고리' AND L.메인부위명 = '허벅지')
+                //             OR L.메인부위명 = I.section COLLATE Korean_Wansung_CI_AS
+                //         )
+                //     ) AS IB, (
+                //         SELECT * FROM IMAGE_SECTION_INFO AS I
+                //         WHERE L.고객번호 = I.surgeryID
+                //         AND L.수술일자 < I.op_data
+                //         AND confidence1 >= ${confidence1}
+                //         AND (
+                //             (I.section = '전신' OR I.section = 'null' OR I.section IS NULL)
+                //             OR (I.section = '엉덩이' AND (L.메인부위명 = '힙업' OR L.메인부위명 = '힙'))
+                //             OR (I.section = '러브핸들' AND L.메인부위명 = '복부')
+                //             OR (I.section = '허파고리' AND L.메인부위명 = '허벅지')
+                //             OR L.메인부위명 = I.section COLLATE Korean_Wansung_CI_AS
+                //         )
+                //     ) AS IA
+                //     WHERE IB.top1 = IA.top1
+                // )`;
                 const userRowsResult = await queryDB(sql);
                 return userRowsResult;
             })
@@ -164,12 +172,12 @@ export async function GET(req: Request) {
         const isBestRows: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
-            SELECT 고객번호, 수술의ID, OPDATE 
-            FROM MAIL_OPE_BEST_CASE AS M 
-            WHERE 고객번호 = '${i1.psEntry}' 
-                AND OPDATE = '${i1.opDate}' 
-                AND 수술의ID = '${doctorId}'
-            `;
+                            SELECT 고객번호, 수술의ID, OPDATE 
+                            FROM MAIL_OPE_BEST_CASE AS M 
+                            WHERE 고객번호 = '${i1.psEntry}' 
+                                AND OPDATE = '${i1.opDate}' 
+                                AND 수술의ID = '${doctorId}'
+                            `;
                 const isBestRowsResult = await queryDB(sql);
                 return isBestRowsResult;
             })
