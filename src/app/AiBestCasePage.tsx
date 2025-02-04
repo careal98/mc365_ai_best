@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+    AlreadyList,
     DrawerClickSelected,
     Footer,
     Header,
@@ -283,10 +284,9 @@ const AiBestCasePage = () => {
                         isAnimating={isAnimating}
                         doctorName={data?.[0]?.user?.doctorName}
                         selectedCount={
-                            // checkedData?.length
-                            //     ? checkedData?.length
-                            //     :
-                            isCopySelected?.length
+                            checkedData?.length !== 0
+                                ? checkedData?.length
+                                : isCopySelected?.length
                         }
                         prevYear={prevYear}
                         prevMonth={prevMonth}
@@ -299,8 +299,7 @@ const AiBestCasePage = () => {
                         />
                     ) : (
                         <>
-                            {
-                                // checkedData?.length === 0 && (
+                            {checkedData?.length === 0 ? (
                                 <>
                                     {data?.length > 3 && (
                                         <div className="absolute bottom-14 left-[46%] z-50 bg-gray-400/30 rounded-lg px-1 py-1">
@@ -359,11 +358,9 @@ const AiBestCasePage = () => {
                                 setIsSelectedConfirm={setIsSelectedConfirm}
                             /> */}
                                 </>
-                                // )
-                                //  : (
-                                //     <AlreadyList />
-                                // )
-                            }
+                            ) : (
+                                <AlreadyList />
+                            )}
                         </>
                     )}
                 </div>
