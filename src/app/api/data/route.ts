@@ -117,12 +117,10 @@ export async function GET(req: Request) {
                                     SELECT * FROM IMAGE_SECTION_INFO AS I
                                     WHERE L.고객번호 = I.surgeryID
                                     AND L.수술일자 >= I.op_data
-                                    AND confidence1 >= ${confidence1}
                                 ) AS IB, (
                                     SELECT * FROM IMAGE_SECTION_INFO AS I
                                     WHERE L.고객번호 = I.surgeryID
                                     AND L.수술일자 < I.op_data
-                                    AND confidence1 >= ${confidence1}
                                 ) AS IA
                                 WHERE IB.top1 = IA.top1
                             )`;
