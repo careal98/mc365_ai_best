@@ -276,7 +276,7 @@ const AiBestCasePage = () => {
             })),
         });
     }, [data, isCopySelected, reset]);
-
+    console.log(isCopySelected.length, checkedData?.length);
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
             <FormProvider {...metods}>
@@ -284,7 +284,11 @@ const AiBestCasePage = () => {
                     <Header
                         isAnimating={isAnimating}
                         doctorName={data?.[0]?.user?.doctorName}
-                        selectedCount={isCopySelected?.length}
+                        selectedCount={
+                            checkedData?.length
+                                ? checkedData?.length
+                                : isCopySelected?.length
+                        }
                         prevYear={prevYear}
                         prevMonth={prevMonth}
                         open={open}
@@ -356,18 +360,6 @@ const AiBestCasePage = () => {
                             /> */}
                                 </>
                             ) : (
-                                // ) : (
-                                //     <AlreadyList
-                                //         ref={ref}
-                                //         isCopySelected={isCopySelected}
-                                //         setIsCopySelected={setIsCopySelected}
-                                //         isLoading={isLoading}
-                                //         setIsMessage={setIsMessage}
-                                //         setIsPostEnd={setIsPostEnd}
-                                //         setIsError={setIsError}
-                                //         setIsAnimating={setIsAnimating}
-                                //     />
-                                // )
                                 <AlreadyList />
                             )}
                         </>
