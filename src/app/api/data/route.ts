@@ -100,6 +100,7 @@ export async function GET(req: Request) {
                 return { beforeImgs, afterImgs };
             })
         );
+
         // 고객 정보
         const userRows: any[] = await Promise.all(
             info.map(async (i1) => {
