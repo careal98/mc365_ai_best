@@ -283,9 +283,10 @@ const AiBestCasePage = () => {
                         isAnimating={isAnimating}
                         doctorName={data?.[0]?.user?.doctorName}
                         selectedCount={
-                            checkedData?.length
-                                ? checkedData?.length
-                                : isCopySelected?.length
+                            // checkedData?.length
+                            //     ? checkedData?.length
+                            //     :
+                            isCopySelected?.length
                         }
                         prevYear={prevYear}
                         prevMonth={prevMonth}
