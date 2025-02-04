@@ -3,269 +3,278 @@
 @tailwind utilities;
 
 @layer base {
-  *,
-  ::before,
-  ::after {
-    box-sizing: border-box;
-    padding: 0px;
-    margin: 0px;
-    border-width: 0px;
-    border-style: solid;
-  }
-
-  ::before,
-  ::after {
-    --tw-content: "";
-  }
-
-  html {
-    font-family: theme("fontFamily.sans");
-    -webkit-text-size-adjust: none;
-  }
-
-  @supports not (min-block-size: 100dvb) {
-    :where(html) {
-      block-size: 100%;
+    *,
+    ::before,
+    ::after {
+        box-sizing: border-box;
+        padding: 0px;
+        margin: 0px;
+        border-width: 0px;
+        border-style: solid;
     }
-  }
 
-  body {
-    block-size: 100%;
-    block-size: 100dvb;
-    font-family: inherit;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
-  }
+    ::before,
+    ::after {
+        --tw-content: "";
+    }
 
-  body > div#root {
-    @apply flex h-full flex-1 flex-col;
-  }
+    html {
+        font-family: theme("fontFamily.sans");
+        -webkit-text-size-adjust: none;
+    }
 
-  a {
-    color: inherit;
-    text-decoration: inherit;
-  }
+    @supports not (min-block-size: 100dvb) {
+        :where(html) {
+            block-size: 100%;
+        }
+    }
 
-  ul,
-  ol {
-    list-style-type: none;
-  }
+    body {
+        block-size: 100%;
+        block-size: 100dvb;
+        font-family: inherit;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
+    }
 
-  b,
-  strong {
-    font-weight: bolder;
-  }
+    body > div#root {
+        @apply flex h-full flex-1 flex-col;
+    }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-size: inherit;
-    font-weight: inherit;
-  }
+    a {
+        color: inherit;
+        text-decoration: inherit;
+    }
 
-  p,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    overflow-wrap: break-word;
-  }
+    ul,
+    ol {
+        list-style-type: none;
+    }
 
-  textarea {
-    resize: none;
-  }
+    b,
+    strong {
+        font-weight: bolder;
+    }
 
-  select {
-    appearance: none;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: inherit;
+        font-weight: inherit;
+    }
 
-  button {
-    appearance: none;
-    background-color: transparent;
-  }
-  input,
-  button,
-  textarea,
-  select {
-    font-family: inherit;
-    font-size: 100%;
-    font-weight: inherit;
-    line-height: inherit;
-    color: inherit;
-  }
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        overflow-wrap: break-word;
+    }
 
-  input::placeholder,
-  textarea::placeholder {
-    color: theme("colors.gray.400");
-  }
+    textarea {
+        resize: none;
+    }
 
-  input:disabled,
-  textarea:disabled {
-    opacity: 1;
-  }
+    select {
+        appearance: none;
+    }
 
-  button,
-  [type="button"],
-  [type="reset"],
-  [type="submit"] {
-    background-color: transparent;
-    background-image: none;
-    -webkit-appearance: button;
-  }
+    button {
+        appearance: none;
+        background-color: transparent;
+    }
+    input,
+    button,
+    textarea,
+    select {
+        font-family: inherit;
+        font-size: 100%;
+        font-weight: inherit;
+        line-height: inherit;
+        color: inherit;
+    }
 
-  button,
-  select {
-    text-transform: none;
-  }
+    input::placeholder,
+    textarea::placeholder {
+        color: theme("colors.gray.400");
+    }
 
-  button,
-  label,
-  select,
-  summary,
-  [role="button"],
-  [role="option"] {
-    cursor: pointer;
-  }
+    input:disabled,
+    textarea:disabled {
+        opacity: 1;
+    }
 
-  label:has(> input:disabled),
-  label:has(+ input:disabled) {
-    cursor: not-allowed;
-  }
+    button,
+    [type="button"],
+    [type="reset"],
+    [type="submit"] {
+        background-color: transparent;
+        background-image: none;
+        -webkit-appearance: button;
+    }
 
-  hr {
-    overflow: visible;
-    border: none;
-    border-block-start: 1px solid;
-    color: inherit;
-    block-size: 0;
-  }
+    button,
+    select {
+        text-transform: none;
+    }
 
-  img,
-  svg,
-  video,
-  canvas,
-  audio,
-  iframe,
-  embed,
-  object {
-    display: block;
-  }
+    button,
+    label,
+    select,
+    summary,
+    [role="button"],
+    [role="option"] {
+        cursor: pointer;
+    }
 
-  img,
-  picture,
-  svg {
-    max-inline-size: 100%;
-    block-size: auto;
-  }
+    label:has(> input:disabled),
+    label:has(+ input:disabled) {
+        cursor: not-allowed;
+    }
 
-  summary {
-    cursor: pointer;
-    list-style-type: none;
-  }
+    hr {
+        overflow: visible;
+        border: none;
+        border-block-start: 1px solid;
+        color: inherit;
+        block-size: 0;
+    }
 
-  summary::-webkit-details-marker {
-    display: none;
-  }
+    img,
+    svg,
+    video,
+    canvas,
+    audio,
+    iframe,
+    embed,
+    object {
+        display: block;
+    }
 
-  table {
-    border-collapse: collapse;
-    text-indent: 0px;
-    border-color: inherit;
-  }
+    img,
+    picture,
+    svg {
+        max-inline-size: 100%;
+        block-size: auto;
+    }
 
-  :focus-visible {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-  }
+    summary {
+        cursor: pointer;
+        list-style-type: none;
+    }
 
-  :disabled {
-    cursor: not-allowed;
-  }
+    summary::-webkit-details-marker {
+        display: none;
+    }
 
-  [hidden] {
-    display: none;
-  }
+    table {
+        border-collapse: collapse;
+        text-indent: 0px;
+        border-color: inherit;
+    }
 
-  [type="search"] {
-    -webkit-appearance: textfield;
-    outline-offset: -2px;
-  }
+    :focus-visible {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+    }
 
-  ::-webkit-file-upload-button {
-    -webkit-appearance: button;
-    font: inherit;
-  }
+    :disabled {
+        cursor: not-allowed;
+    }
 
-  ::-webkit-search-decoration {
-    -webkit-appearance: none;
-  }
+    [hidden] {
+        display: none;
+    }
 
-  ::-webkit-inner-spin-button,
-  ::-webkit-outer-spin-button {
-    height: auto;
-  }
+    [type="search"] {
+        -webkit-appearance: textfield;
+        outline-offset: -2px;
+    }
 
-  /* 스크롤바 스타일 */
-  ::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
-    -webkit-appearance: none;
-  }
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: transparent;
-  }
+    ::-webkit-file-upload-button {
+        -webkit-appearance: button;
+        font: inherit;
+    }
+
+    ::-webkit-search-decoration {
+        -webkit-appearance: none;
+    }
+
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+        height: auto;
+    }
+
+    /* 스크롤바 스타일 */
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        -webkit-appearance: none;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
 }
 
 .ant-skeleton-image {
-  width: 100% !important;
+    width: 100% !important;
 }
 .skeleton-button {
-  width: 28px !important;
+    width: 28px !important;
 }
 .ant-notification-notice-message {
-  margin-bottom: 0px !important;
+    margin-bottom: 0px !important;
 }
 .ant-image-preview-operations {
-  display: none;
+    display: none;
 }
 .ant-image-preview-footer {
-  color: white;
-  bottom: 22%;
-  font-weight: 600;
+    color: white;
+    bottom: 22%;
+    font-weight: 600;
+}
+.ant-image-preview-root .ant-image-preview-img {
+    width: 100%;
+}
+.ant-modal .ant-modal-content {
+    padding: 0px;
+}
+.ant-drawer .ant-drawer-body {
+    padding: 0px;
 }
 /* 툴팁 */
 .tooltip::after {
-  border-color: #ff6600 transparent;
-  border-style: solid;
-  border-width: 0 6px 8px 6.5px;
-  content: "";
-  display: block;
-  right: 10%;
-  transform: translateX(-50%);
-  position: absolute;
-  top: -8px;
-  width: 0;
-  z-index: 1;
+    border-color: #ff6600 transparent;
+    border-style: solid;
+    border-width: 0 6px 8px 6.5px;
+    content: "";
+    display: block;
+    right: 10%;
+    transform: translateX(-50%);
+    position: absolute;
+    top: -8px;
+    width: 0;
+    z-index: 1;
 }
 .tooltip::before {
-  border-color: #ff6600 transparent;
-  border-style: solid;
-  border-width: 0 6px 8px 6.5px;
-  content: "";
-  display: block;
-  right: 10%;
-  transform: translateX(-50%);
-  position: absolute;
-  top: -8px;
-  width: 0;
-  z-index: 0;
+    border-color: #ff6600 transparent;
+    border-style: solid;
+    border-width: 0 6px 8px 6.5px;
+    content: "";
+    display: block;
+    right: 10%;
+    transform: translateX(-50%);
+    position: absolute;
+    top: -8px;
+    width: 0;
+    z-index: 0;
 }
