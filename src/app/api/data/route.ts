@@ -52,54 +52,152 @@ export async function GET(req: Request) {
             part: result.Surgical_Site,
         }));
         // AI가 선정한 수술의 psEntry로 사진 추출
-        const afterRows: any[] = await Promise.all(
+        const arrAfterTop1: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
-                            SELECT TOP 1 PATH, top1 FROM IMAGE_SECTION_INFO
+                            SELECT top1 FROM IMAGE_SECTION_INFO
                             WHERE surgeryID = ${Number(i1.psEntry)}
                                 AND confidence1 >= ${confidence1}
                                 AND op_data > ${Number(i1.opDate)}
-                            ORDER BY op_data, top1
+                            ORDER BY top1
                             `;
-                const afterRowsResult = await queryDB(sql);
-                return afterRowsResult;
+                const afterTop1RowsResult = await queryDB(sql);
+                return afterTop1RowsResult;
+            })
+        );
+        const arrTop1: any[] = await Promise.all(
+            arrAfterTop1?.map(async (row: any, rowIdx: number) => {
+                const topArr: string[] = [];
+                await Promise.all(
+                    await row?.map(async (r: any) => {
+                        const sql = `
+                                SELECT top1 FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                WHERE surgeryID = ${Number(
+                                    info?.[rowIdx]?.psEntry
+                                )}
+                                    AND op_data <= ${Number(
+                                        info?.[rowIdx]?.opDate
+                                    )}
+                                    AND confidence1 >= ${confidence1}
+                                    AND top1 = ${r.top1}
+                                `;
+                        const top1RowsResult = await queryDB(sql);
+                        topArr.push(...top1RowsResult);
+                        return top1RowsResult;
+                    })
+                );
+                return topArr;
             })
         );
         const imgs = await Promise.all(
             info.map(async (aRow, aRowIdx) => {
                 const beforeImgs: string[] = [];
                 const afterImgs: string[] = [];
-                await Promise.all(
-                    afterRows?.[aRowIdx]?.map(
-                        async (row: any, rowIdx: number) => {
-                            const sql = `
-                                        SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-                                        WHERE surgeryID = ${Number(
-                                            aRow.psEntry
-                                        )}
-                                            AND op_data <= ${Number(
-                                                aRow.opDate
-                                            )}
-                                            AND top1 = ${row.top1}
-                                        `;
-                            const imgRowsResult = await queryDB(sql);
-                            const imgRows: any = imgRowsResult;
-                            if (imgRows.length > 0) {
-                                beforeImgs.push(
-                                    [...imgRows?.map((v: any) => v)]?.[0]?.[
-                                        "PATH"
-                                    ]
-                                );
-                                afterImgs.push(
-                                    afterRows?.[aRowIdx]?.[rowIdx]?.["PATH"]
-                                );
-                            }
-                        }
-                    )
-                );
+                const top1 = arrTop1?.[aRowIdx]?.[0].top1;
+                const beforeSql = `
+                                SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                WHERE surgeryID = ${Number(aRow.psEntry)}
+                                    AND op_data <= ${Number(aRow.opDate)}
+                                    AND top1 = ${top1}
+                                `;
+                const beforeImgRowsResult = await queryDB(beforeSql);
+                const afterSql = `
+                                    SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                    WHERE surgeryID = ${Number(aRow.psEntry)}
+                                        AND op_data > ${Number(aRow.opDate)}
+                                        AND top1 = ${top1}
+                                    `;
+                const afterImgRowsResult = await queryDB(afterSql);
+                beforeImgs.push(beforeImgRowsResult?.[0]?.["PATH"]);
+                afterImgs.push(afterImgRowsResult?.[0]?.["PATH"]);
+                // arrTop1?.[aRowIdx]?.map(
+                //     async (row: any, rowIdx: number) => {
+                //         const beforeSql = `
+                //                     SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                //                     WHERE surgeryID = ${Number(
+                //                         aRow.psEntry
+                //                     )}
+                //                         AND op_data <= ${Number(
+                //                             aRow.opDate
+                //                         )}
+                //                         AND top1 = ${row.top1}
+                //                     `;
+                //         const beforeImgRowsResult = await queryDB(
+                //             beforeSql
+                //         );
+                //         const afterSql = `
+                //                     SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                //                     WHERE surgeryID = ${Number(
+                //                         aRow.psEntry
+                //                     )}
+                //                         AND op_data > ${Number(aRow.opDate)}
+                //                         AND top1 = ${row.top1}
+                //                     `;
+                //         const afterImgRowsResult = await queryDB(afterSql);
+                //         const beforeImgRows: any = beforeImgRowsResult;
+                //         const afterImgRows: any = afterImgRowsResult;
+                //         beforeImgs.push(
+                //             [...beforeImgRows?.map((v: any) => v)]?.[0]?.[
+                //                 "PATH"
+                //             ]
+                //         );
+                //         afterImgs.push(
+                //             afterImgRows?.[aRowIdx]?.[rowIdx]?.["PATH"]
+                //         );
+                //     }
+                // )
+
                 return { beforeImgs, afterImgs };
             })
         );
+        // const afterRows: any[] = await Promise.all(
+        //     info.map(async (i1) => {
+        //         const sql = `
+        //                     SELECT TOP 1 PATH, top1 FROM IMAGE_SECTION_INFO
+        //                     WHERE surgeryID = ${Number(i1.psEntry)}
+        //                         AND confidence1 >= ${confidence1}
+        //                         AND op_data > ${Number(i1.opDate)}
+        //                     ORDER BY op_data, top1
+        //                     `;
+        //         const afterRowsResult = await queryDB(sql);
+        //         return afterRowsResult;
+        //     })
+        // );
+        // const imgs = await Promise.all(
+        //     info.map(async (aRow, aRowIdx) => {
+        //         const beforeImgs: string[] = [];
+        //         const afterImgs: string[] = [];
+        //         await Promise.all(
+        //             afterRows?.[aRowIdx]?.map(
+        //                 async (row: any, rowIdx: number) => {
+        //                     const sql = `
+        //                                 SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+        //                                 WHERE surgeryID = ${Number(
+        //                                     aRow.psEntry
+        //                                 )}
+        //                                     AND op_data <= ${Number(
+        //                                         aRow.opDate
+        //                                     )}
+        //                                     AND top1 = ${row.top1}
+        //                                 `;
+        //                     const imgRowsResult = await queryDB(sql);
+        //                     const imgRows: any = imgRowsResult;
+        //                     if (imgRows.length > 0) {
+        //                         beforeImgs.push(
+        //                             [...imgRows?.map((v: any) => v)]?.[0]?.[
+        //                                 "PATH"
+        //                             ]
+        //                         );
+        //                         afterImgs.push(
+        //                             afterRows?.[aRowIdx]?.[rowIdx]?.["PATH"]
+        //                         );
+        //                     }
+        //                 }
+        //             )
+        //         );
+        //         return { beforeImgs, afterImgs };
+        //     })
+        // );
 
         // 고객 정보
         const userRows: any[] = await Promise.all(
@@ -193,8 +291,8 @@ export async function GET(req: Request) {
                 op_part: userRows?.[userIdx]?.[0]?.["메인부위명"],
             },
             imgs: {
-                beforeImgs: imgs?.[userIdx].beforeImgs,
-                afterImgs: imgs?.[userIdx].afterImgs,
+                beforeImgs: imgs?.[userIdx]?.beforeImgs,
+                afterImgs: imgs?.[userIdx]?.afterImgs,
             },
             size: {
                 before: userRows?.[userIdx]?.[0]?.["BEFORE_SIZE"],

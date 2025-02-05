@@ -140,13 +140,11 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                     const user = field?.user;
                     const size = field?.size;
                     const weight = field?.weight;
-                    const newImgs =
-                        field?.imgs?.beforeImgs
-                            ?.map((bImg, bImgIdx) => {
-                                const aImg = field?.imgs?.afterImgs?.[bImgIdx];
-                                return aImg ? [bImg, aImg] : [bImg];
-                            })
-                            .flat() || [];
+                    const imgs = field?.imgs;
+                    const newImgs = [
+                        imgs?.beforeImgs?.[0],
+                        imgs?.afterImgs?.[0],
+                    ];
                     return (
                         <div
                             key={`${field.id}_${user.op_part}`}
