@@ -55,7 +55,7 @@ export async function GET(req: Request) {
         const afterRows: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
-                            SELECT PATH, top1 FROM IMAGE_SECTION_INFO
+                            SELECT TOP 1 PATH, top1 FROM IMAGE_SECTION_INFO
                             WHERE surgeryID = ${Number(i1.psEntry)}
                                 AND confidence1 >= ${confidence1}
                                 AND op_data > ${Number(i1.opDate)}
@@ -73,7 +73,7 @@ export async function GET(req: Request) {
                     afterRows?.[aRowIdx]?.map(
                         async (row: any, rowIdx: number) => {
                             const sql = `
-                                        SELECT PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                        SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                         WHERE surgeryID = ${Number(
                                             aRow.psEntry
                                         )}
