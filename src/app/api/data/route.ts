@@ -9,7 +9,6 @@ interface UserInfo {
 
 export async function GET(req: Request) {
     try {
-        const start = Date.now();
         const url = new URL(req.url);
         const {
             year,
@@ -53,10 +52,8 @@ export async function GET(req: Request) {
             opDate: result.Op_Date,
             part: result.Surgical_Site,
         }));
-        const end1 = Date.now();
-        console.dir(`1API 처리 시간: ${end1 - start}ms`);
+
         // AI가 선정한 수술의 psEntry로 사진 추출
-        const start2 = Date.now();
         const arrAfterTop1: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
@@ -70,25 +67,23 @@ export async function GET(req: Request) {
                 return afterTop1RowsResult;
             })
         );
-        const end2 = Date.now();
-        console.dir(`2API 처리 시간: ${end2 - start2}ms`);
-        const start3 = Date.now();
         const arrTop1: any[] = await Promise.all(
             arrAfterTop1?.map(async (row: any, rowIdx: number) => {
                 const topArr: string[] = [];
                 await Promise.all(
                     await row?.map(async (r: any) => {
                         const sql = `
-                                SELECT top1 FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-                                WHERE surgeryID = ${Number(
-                                    info?.[rowIdx]?.psEntry
-                                )}
-                                    AND op_data <= ${Number(
-                                        info?.[rowIdx]?.opDate
+                                    SELECT top1 FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                    WHERE surgeryID = ${Number(
+                                        info?.[rowIdx]?.psEntry
                                     )}
-                                    AND confidence1 >= ${confidence1}
-                                    AND top1 = ${r?.top1}
-                                `;
+                                        AND op_data <= ${Number(
+                                            info?.[rowIdx]?.opDate
+                                        )}
+                                        AND confidence1 >= ${confidence1}
+                                        AND top1 = ${r?.top1}
+                                    ORDER BY top1
+                                    `;
                         const top1RowsResult = await queryDB(sql);
                         const filteredResults = top1RowsResult.filter(
                             (r2: any) => r2?.top1 === r?.top1
@@ -100,8 +95,7 @@ export async function GET(req: Request) {
                 return topArr;
             })
         );
-        const end3 = Date.now();
-        console.dir(`3API 처리 시간: ${end3 - start3}ms`);
+
         const imgs = await Promise.all(
             info?.map(async (aRow, aRowIdx) => {
                 const beforeImgs: string[] = [];
@@ -113,107 +107,24 @@ export async function GET(req: Request) {
                                 WHERE surgeryID = ${Number(aRow?.psEntry)}
                                     AND op_data <= ${Number(aRow?.opDate)}
                                     AND top1 = ${top1}
+                                ORDER BY top1
                                 `;
+                console.dir(beforeSql);
                 const beforeImgRowsResult = await queryDB(beforeSql);
                 const afterSql = `
-                                    SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-                                    WHERE surgeryID = ${Number(aRow?.psEntry)}
-                                        AND op_data > ${Number(aRow?.opDate)}
-                                        AND top1 = ${top1}
-                                    `;
+                                SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                WHERE surgeryID = ${Number(aRow?.psEntry)}
+                                    AND op_data > ${Number(aRow?.opDate)}
+                                    AND top1 = ${top1}
+                                ORDER BY top1
+                                `;
                 const afterImgRowsResult = await queryDB(afterSql);
                 beforeImgs.push(beforeImgRowsResult?.[0]?.["PATH"]);
                 afterImgs.push(afterImgRowsResult?.[0]?.["PATH"]);
-                // arrTop1?.[aRowIdx]?.map(
-                //     async (row: any, rowIdx: number) => {
-                //         const beforeSql = `
-                //                     SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-                //                     WHERE surgeryID = ${Number(
-                //                         aRow.psEntry
-                //                     )}
-                //                         AND op_data <= ${Number(
-                //                             aRow.opDate
-                //                         )}
-                //                         AND top1 = ${row.top1}
-                //                     `;
-                //         const beforeImgRowsResult = await queryDB(
-                //             beforeSql
-                //         );
-                //         const afterSql = `
-                //                     SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-                //                     WHERE surgeryID = ${Number(
-                //                         aRow.psEntry
-                //                     )}
-                //                         AND op_data > ${Number(aRow.opDate)}
-                //                         AND top1 = ${row.top1}
-                //                     `;
-                //         const afterImgRowsResult = await queryDB(afterSql);
-                //         const beforeImgRows: any = beforeImgRowsResult;
-                //         const afterImgRows: any = afterImgRowsResult;
-                //         beforeImgs.push(
-                //             [...beforeImgRows?.map((v: any) => v)]?.[0]?.[
-                //                 "PATH"
-                //             ]
-                //         );
-                //         afterImgs.push(
-                //             afterImgRows?.[aRowIdx]?.[rowIdx]?.["PATH"]
-                //         );
-                //     }
-                // )
 
-                return { beforeImgs, afterImgs };
+                return [beforeImgs, afterImgs];
             })
-            // const afterRows: any[] = await Promise.all(
         );
-        const start4 = Date.now();
-        console.dir(`4API 처리 시간: ${start4 - end3}ms`);
-        //     info.map(async (i1) => {
-        //         const sql = `
-        //                     SELECT TOP 1 PATH, top1 FROM IMAGE_SECTION_INFO
-        //                     WHERE surgeryID = ${Number(i1.psEntry)}
-        //                         AND confidence1 >= ${confidence1}
-        //                         AND op_data > ${Number(i1.opDate)}
-        //                     ORDER BY op_data, top1
-        //                     `;
-        //         const afterRowsResult = await queryDB(sql);
-        //         return afterRowsResult;
-        //     })
-        // );
-        // const imgs = await Promise.all(
-        //     info.map(async (aRow, aRowIdx) => {
-        //         const beforeImgs: string[] = [];
-        //         const afterImgs: string[] = [];
-        //         await Promise.all(
-        //             afterRows?.[aRowIdx]?.map(
-        //                 async (row: any, rowIdx: number) => {
-        //                     const sql = `
-        //                                 SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-        //                                 WHERE surgeryID = ${Number(
-        //                                     aRow.psEntry
-        //                                 )}
-        //                                     AND op_data <= ${Number(
-        //                                         aRow.opDate
-        //                                     )}
-        //                                     AND top1 = ${row.top1}
-        //                                 `;
-        //                     const imgRowsResult = await queryDB(sql);
-        //                     const imgRows: any = imgRowsResult;
-        //                     if (imgRows.length > 0) {
-        //                         beforeImgs.push(
-        //                             [...imgRows?.map((v: any) => v)]?.[0]?.[
-        //                                 "PATH"
-        //                             ]
-        //                         );
-        //                         afterImgs.push(
-        //                             afterRows?.[aRowIdx]?.[rowIdx]?.["PATH"]
-        //                         );
-        //                     }
-        //                 }
-        //             )
-        //         );
-        //         return { beforeImgs, afterImgs };
-        //     })
-        // );
 
         // 고객 정보
         const userRows: any[] = await Promise.all(
@@ -280,8 +191,6 @@ export async function GET(req: Request) {
             })
         );
 
-        const start5 = Date.now();
-        console.dir(`5API 처리 시간: ${start5 - start4}ms`);
         // 베스트 선정 여부
         const isBestRows: any[] = await Promise.all(
             info.map(async (i1) => {
@@ -297,7 +206,6 @@ export async function GET(req: Request) {
             })
         );
 
-        const start6 = Date.now();
         const userData: any[] = info?.map((user, userIdx) => ({
             isBest: isBestRows?.[userIdx]?.length !== 0 ? true : false,
             user: {
@@ -309,10 +217,7 @@ export async function GET(req: Request) {
                 age: userRows?.[userIdx]?.[0]?.["age"],
                 op_part: userRows?.[userIdx]?.[0]?.["메인부위명"],
             },
-            imgs: {
-                beforeImgs: imgs?.[userIdx]?.beforeImgs,
-                afterImgs: imgs?.[userIdx]?.afterImgs,
-            },
+            imgs: imgs?.[userIdx]?.flat(),
             size: {
                 before: userRows?.[userIdx]?.[0]?.["BEFORE_SIZE"],
                 after: userRows?.[userIdx]?.[0]?.["AFTER_SIZE"],
@@ -323,8 +228,6 @@ export async function GET(req: Request) {
             },
         }));
 
-        const start7 = Date.now();
-        console.dir(`6API 처리 시간: ${start7 - start6}ms`);
         return new Response(JSON.stringify(userData), { status: 200 });
     } catch (err) {
         console.error("데이터 가져오기 중 에러 발생:", err);

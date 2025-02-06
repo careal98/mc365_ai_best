@@ -10,7 +10,7 @@ import { Image, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
 import { CheckedType, FormType } from "@/types";
-import { forwardRef } from "react";
+import { Dispatch, forwardRef, SetStateAction } from "react";
 import { imgUrl } from "@/variables";
 
 interface ListProps {
@@ -21,6 +21,8 @@ interface ListProps {
     setIsError: (v: boolean) => void;
     setIsMessage: (v: string) => void;
     setIsAnimating: (v: boolean) => void;
+    previewImages: Record<number, string[]>;
+    setPreviewImages: Dispatch<SetStateAction<Record<number, string[]>>>;
 }
 
 const List = forwardRef<HTMLDivElement, ListProps>(
@@ -33,6 +35,8 @@ const List = forwardRef<HTMLDivElement, ListProps>(
             isCopySelected,
             setIsCopySelected,
             setIsAnimating,
+            previewImages,
+            setPreviewImages,
         }: ListProps,
         ref
     ) => {
@@ -42,26 +46,38 @@ const List = forwardRef<HTMLDivElement, ListProps>(
             name: "isRandom",
         });
 
-        // const checkData = useCallback(async () => {
-        //   try {
-        //     const response = await fetch(
-        //       `/api/check/?year=${year}&month=${month}&doctorId=${doctorId}`
-        //     );
-        //     const result = await response.json();
-        //     return result;
-        //   } catch (error) {
-        //     console.error("Error fetching data:", error);
-        //     return null;
-        //   }
-        // }, [year, month, doctorId]);
+        // 클릭 시 이미지 상세
+        const onHandleImgs = async (psEntry: string, opDate: string) => {
+            if (!psEntry && !opDate) return;
+            try {
+                const response = await fetch(
+                    `/api/images?psEntry=${psEntry}&opDate=${opDate}`,
+                    {
+                        method: "GET",
+                        mode: "no-cors",
+                    }
+                );
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
 
-        // useEffect(() => {
-        //   checkData().then((res) => {
-        //     if (res) {
-        //       // 필요한 로직을 여기에 추가
-        //     }
-        //   });
-        // }, [checkData]);
+        const onHandleClick = async (
+            fieldIdx: number,
+            psEntry: string,
+            opDate: string
+        ) => {
+            try {
+                const res = await onHandleImgs(psEntry, opDate);
+                const images: string[] = res?.flatMap((v: string) => v) ?? [];
+
+                setPreviewImages((prev) => ({ ...prev, [fieldIdx]: images }));
+            } catch (error) {
+                console.error("이미지 로딩 오류:", error);
+            }
+        };
 
         const handleHeartClick = (
             fieldIdx: number,
@@ -72,22 +88,6 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                 (f) => f.psEntry === currentId && f.opDate === currentOpDate
             );
             if (isAlreadyChecked) {
-                // const aaa = watch()?.isRandom?.filter(
-                //   (v) => v?.user?.psEntry === currentId && v?.user?.op_data === currentOpDate
-                // );
-                // console.log('aaa', aaa)
-                // if (aaa.length <= 1) {
-                //   watch()?.isRandom?.map((item, itemIdx) => {
-                //     console.log(item?.user?.psEntry === currentId && item?.user?.op_data === currentOpDate);
-                //     if (item?.user?.psEntry === currentId && item?.user?.op_data === currentOpDate) {
-                //       // update(itemIdx, {
-                //       //   ...item,
-                //       //   isBest: false,
-                //       // });
-                //       setValue(`isRandom.${itemIdx}.isBest`, false)
-                //     }
-                //   });
-                // }
                 setValue(`isRandom.${fieldIdx}.isBest`, false);
                 setIsCopySelected((prev) =>
                     prev.filter(
@@ -108,11 +108,6 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                     setIsPostEnd(true);
                     setIsError(true);
                 } else {
-                    // update(fieldIdx, {
-                    //   ...fields[fieldIdx],
-                    //   isBest: true,
-                    // });
-                    // });
                     setValue(`isRandom.${fieldIdx}.isBest`, true);
                     setIsCopySelected((prev) =>
                         prev
@@ -133,7 +128,6 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                 setIsAnimating(false);
             }, 1900);
         };
-
         return (
             <div className="w-full flex flex-col py-2 h-full px-4 gap-y-2 overflow-scroll bg-[#ff6600]/10">
                 {fields?.map((field, fieldIdx) => {
@@ -141,10 +135,6 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                     const size = field?.size;
                     const weight = field?.weight;
                     const imgs = field?.imgs;
-                    const newImgs = [
-                        imgs?.beforeImgs?.[0],
-                        imgs?.afterImgs?.[0],
-                    ];
                     return (
                         <div
                             key={`${field.id}_${user.op_part}`}
@@ -157,7 +147,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                 slidesPerGroup={2}
                                 className="flex w-full overflow-hidden"
                             >
-                                {newImgs?.map((img, imgIdx) => {
+                                {imgs?.map((img, imgIdx) => {
                                     const filename = img.slice(4);
                                     return (
                                         <SwiperSlide
@@ -165,7 +155,9 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                             className="flex w-full"
                                         >
                                             <Image.PreviewGroup
-                                                items={newImgs?.map(
+                                                items={previewImages?.[
+                                                    fieldIdx
+                                                ]?.map(
                                                     (v) =>
                                                         `${imgUrl}${v.slice(4)}`
                                                 )}
@@ -220,6 +212,13 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                         maskClassName:
                                                             "rounded-xl object-cover",
                                                     }}
+                                                    onClick={() =>
+                                                        onHandleClick(
+                                                            fieldIdx,
+                                                            user?.psEntry,
+                                                            user?.op_data
+                                                        )
+                                                    }
                                                 />
                                             </Image.PreviewGroup>
                                         </SwiperSlide>

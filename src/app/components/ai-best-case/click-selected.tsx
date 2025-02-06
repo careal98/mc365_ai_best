@@ -152,9 +152,7 @@ const ClickSelected = ({
                                         className="object-cover h-[100px] rounded-t-md"
                                     /> */}
                                     <img
-                                        src={`${imgUrl}${imgs?.afterImgs?.[0]?.slice(
-                                            4
-                                        )}`}
+                                        src={`${imgUrl}${imgs?.[0]?.slice(4)}`}
                                         className="object-cover h-[100px] rounded-md"
                                         onError={(e) =>
                                             (e.currentTarget.src =

@@ -28,6 +28,9 @@ const AiBestCasePage = () => {
     const [firstData, setFirstData] = useState<DataType[]>([]);
     const [checkedData, setCheckedData] = useState<CheckedType[]>([]);
     const [isCopySelected, setIsCopySelected] = useState<CheckedType[]>([]);
+    const [previewImages, setPreviewImages] = useState<
+        Record<number, string[]>
+    >({});
     const [isTotalCount, setIsTotalCount] = useState(0);
     const [isIndex, setIsIndex] = useState(0);
     const [hasMore, setHasMore] = useState(true);
@@ -69,10 +72,7 @@ const AiBestCasePage = () => {
                     ? true
                     : false,
                 user: v.user,
-                imgs: {
-                    afterImgs: v?.imgs?.afterImgs,
-                    beforeImgs: v?.imgs?.beforeImgs,
-                },
+                imgs: v?.imgs,
                 size: {
                     before: v?.size?.before,
                     after: v?.size?.after,
@@ -187,10 +187,7 @@ const AiBestCasePage = () => {
                             newData?.map((n: DataType) => ({
                                 isBest: true,
                                 user: n?.user,
-                                imgs: {
-                                    afterImgs: n?.imgs?.afterImgs,
-                                    beforeImgs: n?.imgs?.beforeImgs,
-                                },
+                                imgs: n?.imgs,
                                 size: {
                                     before: n?.size?.before,
                                     after: n?.size?.after,
@@ -261,10 +258,7 @@ const AiBestCasePage = () => {
                     ? true
                     : false,
                 user: v?.user,
-                imgs: {
-                    afterImgs: v?.imgs?.afterImgs,
-                    beforeImgs: v?.imgs?.beforeImgs,
-                },
+                imgs: v?.imgs,
                 size: {
                     before: v?.size?.before,
                     after: v?.size?.after,
@@ -276,6 +270,13 @@ const AiBestCasePage = () => {
             })),
         });
     }, [data, isCopySelected, reset]);
+
+    useEffect(() => {
+        data?.map((d, dIdx) => {
+            setPreviewImages((prev) => ({ ...prev, [dIdx]: d?.imgs }));
+        });
+    }, [data]);
+
     return (
         <Suspense fallback={<div>로딩 중...</div>}>
             <FormProvider {...metods}>
@@ -315,6 +316,8 @@ const AiBestCasePage = () => {
                                         setIsPostEnd={setIsPostEnd}
                                         setIsError={setIsError}
                                         setIsAnimating={setIsAnimating}
+                                        previewImages={previewImages}
+                                        setPreviewImages={setPreviewImages}
                                     />
                                     <Footer
                                         handleFetchMore={onHandleData}

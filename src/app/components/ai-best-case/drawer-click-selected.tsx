@@ -126,9 +126,7 @@ const DrawerClickSelected = ({
                                     className="flex flex-col w-full shadow-md rounded-md"
                                 >
                                     <img
-                                        src={`${imgUrl}${imgs?.beforeImgs?.[0]?.slice(
-                                            4
-                                        )}`}
+                                        src={`${imgUrl}${imgs?.[0]?.slice(4)}`}
                                         className="object-cover h-[110px] rounded-t-md"
                                         onError={(e) =>
                                             (e.currentTarget.src =
@@ -136,9 +134,7 @@ const DrawerClickSelected = ({
                                         }
                                     />
                                     <img
-                                        src={`${imgUrl}${imgs?.afterImgs?.[0]?.slice(
-                                            4
-                                        )}`}
+                                        src={`${imgUrl}${imgs?.[1]?.slice(4)}`}
                                         className="object-cover h-[110px] rounded-b-md"
                                         onError={(e) =>
                                             (e.currentTarget.src =
