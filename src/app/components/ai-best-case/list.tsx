@@ -12,6 +12,7 @@ import Skeletons from "./skeletons";
 import { CheckedType, FormType } from "@/types";
 import { Dispatch, forwardRef, SetStateAction } from "react";
 import { imgUrl } from "@/variables";
+import { Player } from "@lottiefiles/react-lottie-player";
 
 interface ListProps {
     isCopySelected: CheckedType[];
@@ -162,6 +163,26 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                         `${imgUrl}${v.slice(4)}`
                                                 )}
                                                 preview={{
+                                                    countRender: (
+                                                        current,
+                                                        total
+                                                    ) => {
+                                                        return (
+                                                            <>
+                                                                {total === 2 ? (
+                                                                    <Player
+                                                                        autoplay
+                                                                        loop
+                                                                        keepLastFrame
+                                                                        src="/assets/loading.json"
+                                                                        className="w-[180px] relative top-[40px]"
+                                                                    />
+                                                                ) : (
+                                                                    <p>{`${current}/${total}`}</p>
+                                                                )}
+                                                            </>
+                                                        );
+                                                    },
                                                     imageRender: (
                                                         originalNode,
                                                         info

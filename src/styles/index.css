@@ -251,6 +251,9 @@
 .ant-drawer .ant-drawer-body {
     padding: 0px;
 }
+.ant-image-preview-progress {
+    margin-bottom: 0px;
+}
 /* 툴팁 */
 .tooltip::after {
     border-color: #ff6600 transparent;
