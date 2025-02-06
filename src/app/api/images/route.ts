@@ -18,7 +18,6 @@ export async function GET(req: Request) {
                         AND op_data > ${Number(opDate)}
                         AND confidence1 > ${confidence1}
                     ORDER BY op_data DESC, top1 ASC, indate DESC
-
                     `;
         const afterRowsResult: Top1[] = await queryDB(sql);
         const arrTop1: Top1[] = (
@@ -31,7 +30,6 @@ export async function GET(req: Request) {
                                     AND confidence1 >= ${confidence1}
                                     AND top1 = ${row?.top1}
                                 ORDER BY op_data DESC, top1 ASC, indate DESC
-
                                 `;
                     const top1RowsResult: Top1[] = await queryDB(sql);
                     const filteredResults: Top1[] = top1RowsResult.filter(
@@ -44,35 +42,36 @@ export async function GET(req: Request) {
 
         const imgs = (
             await Promise.all(
-                arrTop1?.map(async (aRow) => {
-                    const top1 = aRow?.top1;
-                    const beforeSql = `
+                arrTop1
+                    ?.sort((a, b) => a?.top1 - b?.top1)
+                    ?.map(async (aRow) => {
+                        const top1 = aRow?.top1;
+                        const beforeSql = `
                                     SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                     WHERE surgeryID = ${Number(psEntry)}
                                         AND op_data <= ${Number(opDate)}
                                         AND top1 = ${top1}
                                     ORDER BY op_data DESC, top1 ASC, indate DESC
-
                                     `;
-                    const beforeImgRowsResult = await queryDB(beforeSql);
-                    const afterSql = `
+                        const beforeImgRowsResult = await queryDB(beforeSql);
+                        const afterSql = `
                                     SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                     WHERE surgeryID = ${Number(psEntry)}
                                         AND op_data > ${Number(opDate)}
                                         AND top1 = ${top1}
                                     ORDER BY op_data DESC, top1 ASC, indate DESC
                                     `;
-                    const afterImgRowsResult = await queryDB(afterSql);
-                    const arrImg = beforeImgRowsResult?.map(
-                        (before: any, beforeIdx: number) => {
-                            return [
-                                before?.["PATH"],
-                                afterImgRowsResult?.[beforeIdx]?.["PATH"],
-                            ];
-                        }
-                    );
-                    return arrImg;
-                })
+                        const afterImgRowsResult = await queryDB(afterSql);
+                        const arrImg = beforeImgRowsResult?.map(
+                            (before: any, beforeIdx: number) => {
+                                return [
+                                    before?.["PATH"],
+                                    afterImgRowsResult?.[beforeIdx]?.["PATH"],
+                                ];
+                            }
+                        );
+                        return arrImg;
+                    })
             )
         )?.flat();
 

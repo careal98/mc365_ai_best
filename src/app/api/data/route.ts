@@ -61,7 +61,6 @@ export async function GET(req: Request) {
                                 AND confidence1 >= ${confidence1}
                                 AND op_data > ${Number(i1.opDate)}
                             ORDER BY op_data DESC, top1 ASC, indate DESC
-
                             `;
                 const afterTop1RowsResult = await queryDB(sql);
                 return afterTop1RowsResult;
@@ -83,14 +82,12 @@ export async function GET(req: Request) {
                                         AND confidence1 >= ${confidence1}
                                         AND top1 = ${r?.top1}
                                     ORDER BY op_data DESC, top1 ASC, indate DESC
-
-                                    `;
+                        `;
                         const top1RowsResult = await queryDB(sql);
                         const filteredResults = top1RowsResult.filter(
                             (r2: any) => r2?.top1 === r?.top1
                         );
                         topArr.push(...filteredResults);
-                        return top1RowsResult;
                     })
                 );
                 return topArr;
@@ -99,7 +96,9 @@ export async function GET(req: Request) {
 
         const imgs = await Promise.all(
             info?.map(async (aRow, aRowIdx) => {
-                const top1 = arrTop1?.[aRowIdx]?.[0]?.top1;
+                const top1 = arrTop1?.[aRowIdx]?.sort(
+                    (a: any, b: any) => a?.top1 - b?.top1
+                )?.[0]?.top1;
                 const beforeSql = `
                                 SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                 WHERE surgeryID = ${Number(aRow?.psEntry)}
