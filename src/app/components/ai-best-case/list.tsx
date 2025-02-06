@@ -10,7 +10,7 @@ import { Image, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
 import { CheckedType, FormType } from "@/types";
-import { Dispatch, forwardRef, SetStateAction } from "react";
+import { Dispatch, forwardRef, SetStateAction, useState } from "react";
 import { imgUrl } from "@/variables";
 import { Player } from "@lottiefiles/react-lottie-player";
 
@@ -41,6 +41,13 @@ const List = forwardRef<HTMLDivElement, ListProps>(
         }: ListProps,
         ref
     ) => {
+        const [loadingImages, setLoadingImages] = useState<boolean[]>([]);
+
+        const handleImageLoad = (index: number) => {
+            const updatedLoadingImages = [...loadingImages];
+            updatedLoadingImages[index] = false;
+            setLoadingImages(updatedLoadingImages);
+        };
         const { control, setValue } = useFormContext<FormType>();
         const { fields } = useFieldArray<FormType>({
             control,
@@ -233,6 +240,9 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                         maskClassName:
                                                             "rounded-xl object-cover",
                                                     }}
+                                                    onLoad={() =>
+                                                        handleImageLoad(imgIdx)
+                                                    }
                                                     onClick={() =>
                                                         onHandleClick(
                                                             fieldIdx,
