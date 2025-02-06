@@ -3,6 +3,7 @@ import queryDB from "../../../../../lib/db"; // DB 연결 함수
 
 export async function GET(req: Request) {
     try {
+        const confidence1 = 0.7;
         const url = new URL(req.url);
         const { year, month, doctorId } = Object.fromEntries(
             url.searchParams.entries()
@@ -29,30 +30,11 @@ export async function GET(req: Request) {
                             AND A.Month = ${month}
                             AND A.Doctor_Id = '${doctorId}'
                             AND M.고객번호 IS NULL
+                            AND I1.top1 = I2.top1
+                            AND I1.confidence1 >= ${confidence1}
+                            AND I2.confidence1 >= ${confidence1}
                         ORDER BY A.RANK DESC, A.Op_Date DESC 
                         `;
-        // const baseSql = `
-        // SELECT *
-        // FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
-        // WHERE Year = ${Number(year)}
-        //     AND Month = ${Number(month)}
-        //     AND Doctor_Id = '${doctorId}'
-        //     AND EXISTS (
-        //         SELECT 1
-        //         FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO AS I
-        //         WHERE CONVERT(VARCHAR, A.Psentry) = I.surgeryID
-        //         AND A.Op_Date >= I.op_data
-        //         AND A.Surgical_Site COLLATE Korean_Wansung_CI_AS = I.section COLLATE Korean_Wansung_CI_AS
-        //     )
-        //     AND EXISTS (
-        //         SELECT 1
-        //         FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO AS I
-        //         WHERE CONVERT(VARCHAR, A.Psentry) = I.surgeryID
-        //         AND A.Op_Date < I.op_data
-        //         AND A.Surgical_Site COLLATE Korean_Wansung_CI_AS = I.section COLLATE Korean_Wansung_CI_AS
-        //     )
-        // ORDER BY RANK ASC, Op_Date DESC
-        // `;
         const results: any[] = await queryDB(baseSql);
         return new Response(JSON.stringify(results.length), { status: 200 });
     } catch (err) {

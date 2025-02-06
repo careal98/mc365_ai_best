@@ -26,11 +26,11 @@ export async function GET(req: Request) {
                         INNER JOIN 
                             tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
                             ON CONVERT(VARCHAR, A.Psentry) = I1.surgeryID
-                            AND A.Op_Date >= I1.op_data
+                            AND A.Op_Date > I1.op_data
                         INNER JOIN 
                             tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
                             ON CONVERT(VARCHAR, A.Psentry) = I2.surgeryID
-                            AND A.Op_Date < I2.op_data
+                            AND A.Op_Date <= I2.op_data
                         LEFT JOIN 
                             tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE M
                             ON A.Psentry COLLATE Korean_Wansung_CI_AS = M.고객번호 COLLATE Korean_Wansung_CI_AS
@@ -41,6 +41,8 @@ export async function GET(req: Request) {
                             AND A.Doctor_Id = '${doctorId}'
                             AND M.고객번호 IS NULL
                             AND I1.top1 = I2.top1
+                            AND I1.confidence1 >= ${confidence1}
+                            AND I2.confidence1 >= ${confidence1}
                         ORDER BY A.RANK DESC, A.Op_Date DESC 
                         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
                         `;
@@ -66,6 +68,7 @@ export async function GET(req: Request) {
                 return afterTop1RowsResult;
             })
         );
+
         const arrTop1: any[] = await Promise.all(
             arrAfterTop1?.map(async (row: any, rowIdx: number) => {
                 const topArr: string[] = [];
@@ -82,7 +85,7 @@ export async function GET(req: Request) {
                                         AND confidence1 >= ${confidence1}
                                         AND top1 = ${r?.top1}
                                     ORDER BY op_data DESC, top1 ASC, indate DESC
-                        `;
+                                    `;
                         const top1RowsResult = await queryDB(sql);
                         const filteredResults = top1RowsResult.filter(
                             (r2: any) => r2?.top1 === r?.top1
@@ -113,7 +116,6 @@ export async function GET(req: Request) {
                                     AND top1 = ${top1}
                                 ORDER BY op_data ASC, top1 ASC, confidence1 DESC
                                 `;
-
                 const [beforeImgRowsResult, afterImgRowsResult] =
                     await Promise.all([queryDB(beforeSql), queryDB(afterSql)]);
 
@@ -130,11 +132,11 @@ export async function GET(req: Request) {
                 const sql = `
                             SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT
                             FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S
-                            WHERE L.고객번호 = '${i1.psEntry}'
-                                AND L.수술일자 = '${i1.opDate}'
+                            WHERE L.고객번호 = '${i1?.psEntry}'
+                                AND L.수술일자 = '${i1?.opDate}'
                                 AND L.고객번호 = S.고객번호
                                 AND L.수술일자 = S.수술일자
-                                AND L.메인부위명 = '${i1.part}'
+                                AND L.메인부위명 = '${i1?.part}'
                                 AND EXISTS (
                                 SELECT TOP 1 * FROM (
                                     SELECT * FROM IMAGE_SECTION_INFO AS I

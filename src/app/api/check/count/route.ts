@@ -8,16 +8,27 @@ import queryDB from "../../../../../lib/db";
 // }
 export async function GET(req: Request) {
     try {
-        // const confidence1 = 0.7;
+        const confidence1 = 0.7;
         const url = new URL(req.url);
         const { year, month, doctorId } = Object.fromEntries(
             url.searchParams.entries()
         );
         const sql = `SELECT 고객번호 as psEntry, M.OPDATE as opDate
                     FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE AS M
+                    INNER JOIN 
+                        tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
+                        ON CONVERT(VARCHAR, M.고객번호) = I1.surgeryID
+                        AND M.OPDATE > I1.op_data
+                    INNER JOIN 
+                        tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
+                        ON CONVERT(VARCHAR, M.고객번호) = I2.surgeryID
+                        AND M.OPDATE <= I2.op_data
                     WHERE M.수술의ID = '${doctorId}'
                     AND YEAR(M.last_updated) = ${year}
                     AND MONTH(M.last_updated) = ${month}
+                    AND I1.top1 = I2.top1
+                    AND I1.confidence1 >= ${confidence1}
+                    AND I2.confidence1 >= ${confidence1}
                     `;
         // const sql = ` SELECT 고객번호 as psEntry, M.OPDATE as opDate
         // FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE AS M, tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI AS A

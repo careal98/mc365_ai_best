@@ -117,11 +117,11 @@ const AiBestCasePage = () => {
     const handleFetchMore = () => {
         if (isClick && hasMore && !isLoading) {
             setIsLoading(true);
-            fetchData(data.length)
+            fetchData(data?.length)
                 .then((newData) => {
                     if (newData) {
                         setData((prev) => [...prev, ...newData]);
-                        if (newData.length < limit) {
+                        if (newData?.length < limit) {
                             setHasMore(false);
                         }
                     }
@@ -243,10 +243,6 @@ const AiBestCasePage = () => {
     }, [year, month, doctorId]);
 
     useEffect(() => {
-        // const aaa = checkedData?.map((v) => ({
-        //     psEntry: v?.psEntry,
-        //     opDate: v?.opDate,
-        // }));
         const bbb = firstData?.map((d) => ({
             psEntry: d?.user?.psEntry,
             opDate: d?.user?.op_data,
