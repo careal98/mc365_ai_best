@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
     AlreadyList,
@@ -177,8 +177,11 @@ const AiBestCasePage = () => {
         },
     });
 
+    const isFetched = useRef(false);
+
     useEffect(() => {
-        if (!isLoading) {
+        if (!isFetched.current && !isLoading) {
+            isFetched.current = true;
             setIsLoading(true);
             fetchData(0)
                 .then((newData) => {
@@ -222,13 +225,21 @@ const AiBestCasePage = () => {
         handleFetchMore();
     };
 
+    const isCheckFetched = useRef(false);
+
     useEffect(() => {
-        checkData().then((res) => {
-            setCheckedData(res);
-        });
-        checkTotalData().then((res) => {
-            setIsTotalCount(Number(res));
-        });
+        if (!isCheckFetched.current) {
+            isCheckFetched.current = true;
+
+            Promise.all([checkData(), checkTotalData()])
+                .then(([checkedRes, totalRes]) => {
+                    setCheckedData(checkedRes);
+                    setIsTotalCount(Number(totalRes));
+                })
+                .catch((error) => {
+                    console.error("Error fetching check data:", error);
+                });
+        }
     }, [year, month, doctorId]);
 
     useEffect(() => {

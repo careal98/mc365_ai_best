@@ -45,8 +45,7 @@ export async function GET(req: Request) {
                         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
                         `;
         const results: any[] = await queryDB(baseSql);
-        // QueryResult 타입에서 rows로 데이터 추출
-        // const rows: any = 'rows' in results ? results.rows : [];
+
         const info: UserInfo[] = results.map((result: any) => ({
             psEntry: result.Psentry,
             opDate: result.Op_Date,
@@ -61,7 +60,8 @@ export async function GET(req: Request) {
                             WHERE surgeryID = ${Number(i1.psEntry)}
                                 AND confidence1 >= ${confidence1}
                                 AND op_data > ${Number(i1.opDate)}
-                            ORDER BY top1
+                            ORDER BY op_data DESC, top1 ASC, indate DESC
+
                             `;
                 const afterTop1RowsResult = await queryDB(sql);
                 return afterTop1RowsResult;
@@ -82,7 +82,8 @@ export async function GET(req: Request) {
                                         )}
                                         AND confidence1 >= ${confidence1}
                                         AND top1 = ${r?.top1}
-                                    ORDER BY top1
+                                    ORDER BY op_data DESC, top1 ASC, indate DESC
+
                                     `;
                         const top1RowsResult = await queryDB(sql);
                         const filteredResults = top1RowsResult.filter(
@@ -98,31 +99,29 @@ export async function GET(req: Request) {
 
         const imgs = await Promise.all(
             info?.map(async (aRow, aRowIdx) => {
-                const beforeImgs: string[] = [];
-                const afterImgs: string[] = [];
                 const top1 = arrTop1?.[aRowIdx]?.[0]?.top1;
-                // console.dir(arrTop1);
                 const beforeSql = `
                                 SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                 WHERE surgeryID = ${Number(aRow?.psEntry)}
                                     AND op_data <= ${Number(aRow?.opDate)}
                                     AND top1 = ${top1}
-                                ORDER BY top1
+                                ORDER BY op_data DESC, top1 ASC, indate DESC
                                 `;
-                console.dir(beforeSql);
-                const beforeImgRowsResult = await queryDB(beforeSql);
                 const afterSql = `
                                 SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                 WHERE surgeryID = ${Number(aRow?.psEntry)}
                                     AND op_data > ${Number(aRow?.opDate)}
                                     AND top1 = ${top1}
-                                ORDER BY top1
+                                ORDER BY op_data ASC, top1 ASC, confidence1 DESC
                                 `;
-                const afterImgRowsResult = await queryDB(afterSql);
-                beforeImgs.push(beforeImgRowsResult?.[0]?.["PATH"]);
-                afterImgs.push(afterImgRowsResult?.[0]?.["PATH"]);
 
-                return [beforeImgs, afterImgs];
+                const [beforeImgRowsResult, afterImgRowsResult] =
+                    await Promise.all([queryDB(beforeSql), queryDB(afterSql)]);
+
+                return [
+                    beforeImgRowsResult?.[0]?.["PATH"],
+                    afterImgRowsResult?.[0]?.["PATH"],
+                ];
             })
         );
 
@@ -149,43 +148,6 @@ export async function GET(req: Request) {
                                 ) AS IA
                                 WHERE IB.top1 = IA.top1
                             )`;
-                //  const sql = `
-                // SELECT L.고객명, L.수술의, L.메인부위명, L.sex, L.age, S.BEFORE_SIZE, S.AFTER_SIZE, S.BEFORE_WEIGHT, S.AFTER_WEIGHT
-                // FROM MAIL_OPE_LIST AS L, MAIL_OPE_SIZE AS S
-                // WHERE L.고객번호 = '${i1.psEntry}'
-                //     AND L.수술일자 = '${i1.opDate}'
-                //     AND L.메인부위명 = '${i1.part}'
-                //     AND L.고객번호 = S.고객번호
-                //     AND L.수술일자 = S.수술일자
-                //     AND L.메인부위명 = S.메인부위명
-                //     AND EXISTS (
-                //     SELECT TOP 1 * FROM (
-                //         SELECT * FROM IMAGE_SECTION_INFO AS I
-                //         WHERE L.고객번호 = I.surgeryID
-                //         AND L.수술일자 >= I.op_data
-                //         AND confidence1 >= ${confidence1}
-                //         AND (
-                //             (I.section = '전신' OR I.section = 'null' OR I.section IS NULL)
-                //             OR (I.section = '엉덩이' AND (L.메인부위명 = '힙업' OR L.메인부위명 = '힙'))
-                //             OR (I.section = '러브핸들' AND L.메인부위명 = '복부')
-                //             OR (I.section = '허파고리' AND L.메인부위명 = '허벅지')
-                //             OR L.메인부위명 = I.section COLLATE Korean_Wansung_CI_AS
-                //         )
-                //     ) AS IB, (
-                //         SELECT * FROM IMAGE_SECTION_INFO AS I
-                //         WHERE L.고객번호 = I.surgeryID
-                //         AND L.수술일자 < I.op_data
-                //         AND confidence1 >= ${confidence1}
-                //         AND (
-                //             (I.section = '전신' OR I.section = 'null' OR I.section IS NULL)
-                //             OR (I.section = '엉덩이' AND (L.메인부위명 = '힙업' OR L.메인부위명 = '힙'))
-                //             OR (I.section = '러브핸들' AND L.메인부위명 = '복부')
-                //             OR (I.section = '허파고리' AND L.메인부위명 = '허벅지')
-                //             OR L.메인부위명 = I.section COLLATE Korean_Wansung_CI_AS
-                //         )
-                //     ) AS IA
-                //     WHERE IB.top1 = IA.top1
-                // )`;
                 const userRowsResult = await queryDB(sql);
                 return userRowsResult;
             })

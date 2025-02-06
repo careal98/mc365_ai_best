@@ -17,20 +17,22 @@ export async function GET(req: Request) {
                     WHERE surgeryID = ${Number(psEntry)}
                         AND op_data > ${Number(opDate)}
                         AND confidence1 > ${confidence1}
-                    ORDER BY top1
+                    ORDER BY op_data DESC, top1 ASC, indate DESC
+
                     `;
         const afterRowsResult: Top1[] = await queryDB(sql);
         const arrTop1: Top1[] = (
             await Promise.all(
                 afterRowsResult?.map(async (row: Top1) => {
                     const sql = `
-                            SELECT top1 FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
-                            WHERE surgeryID = ${Number(psEntry)}
-                                AND op_data <= ${Number(opDate)}
-                                AND confidence1 >= ${confidence1}
-                                AND top1 = ${row?.top1}
-                            ORDER BY top1
-                            `;
+                                SELECT top1 FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
+                                WHERE surgeryID = ${Number(psEntry)}
+                                    AND op_data <= ${Number(opDate)}
+                                    AND confidence1 >= ${confidence1}
+                                    AND top1 = ${row?.top1}
+                                ORDER BY op_data DESC, top1 ASC, indate DESC
+
+                                `;
                     const top1RowsResult: Top1[] = await queryDB(sql);
                     const filteredResults: Top1[] = top1RowsResult.filter(
                         (r2: Top1) => r2?.top1 === row?.top1
@@ -49,16 +51,16 @@ export async function GET(req: Request) {
                                     WHERE surgeryID = ${Number(psEntry)}
                                         AND op_data <= ${Number(opDate)}
                                         AND top1 = ${top1}
-                                    ORDER BY top1
+                                    ORDER BY op_data DESC, top1 ASC, indate DESC
+
                                     `;
-                    console.dir(beforeSql);
                     const beforeImgRowsResult = await queryDB(beforeSql);
                     const afterSql = `
                                     SELECT TOP 1 PATH FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                     WHERE surgeryID = ${Number(psEntry)}
                                         AND op_data > ${Number(opDate)}
                                         AND top1 = ${top1}
-                                    ORDER BY top1
+                                    ORDER BY op_data DESC, top1 ASC, indate DESC
                                     `;
                     const afterImgRowsResult = await queryDB(afterSql);
                     const arrImg = beforeImgRowsResult?.map(
