@@ -176,13 +176,13 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                     ) => {
                                                         return (
                                                             <>
-                                                                {total === 2 ? (
+                                                                {total !== 2 ? (
                                                                     <Player
                                                                         autoplay
                                                                         loop
                                                                         keepLastFrame
                                                                         src="/assets/loading.json"
-                                                                        className="w-[180px] relative top-[40px]"
+                                                                        className="w-[200px] relative top-[45px]"
                                                                     />
                                                                 ) : (
                                                                     <p>{`${current}/${total}`}</p>
