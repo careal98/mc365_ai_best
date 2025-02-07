@@ -176,7 +176,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                     ) => {
                                                         return (
                                                             <>
-                                                                {total !== 2 ? (
+                                                                {total === 2 ? (
                                                                     <Player
                                                                         autoplay
                                                                         loop
