@@ -33,7 +33,7 @@ export async function GET(req: Request) {
                             AND I1.top1 = I2.top1
                             AND I1.confidence1 >= ${confidence1}
                             AND I2.confidence1 >= ${confidence1}
-                        ORDER BY A.RANK DESC, A.Op_Date DESC 
+                        ORDER BY A.RANK ASC, A.Op_Date DESC 
                         `;
         const results: any[] = await queryDB(baseSql);
         return new Response(JSON.stringify(results.length), { status: 200 });
