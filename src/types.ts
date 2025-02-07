@@ -13,6 +13,7 @@ export type DataType = {
         age: number;
         op_data: string;
         op_part: string;
+        auto_check: number;
     };
     imgs: string[];
     size: {

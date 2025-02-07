@@ -10,7 +10,12 @@ export async function POST(req: Request) {
         // 선택한 수술이 베스트 케이스에 있는 데이터
         const checkDatas: any[] = await Promise.all(
             best.map(async (v) => {
-                const checkSql = `SELECT 고객번호, 수술의ID, OPDATE FROM MAIL_OPE_BEST_CASE WHERE 수술의ID = '${v.doctorId}' and 고객번호 = '${v.psEntry}' and OPDATE = '${v.op_date}'`;
+                const checkSql = `
+                                SELECT 고객번호, 수술의ID, OPDATE 
+                                FROM MAIL_OPE_BEST_CASE 
+                                WHERE 수술의ID = '${v.doctorId}' 
+                                    AND 고객번호 = '${v.psEntry}' 
+                                    AND OPDATE = '${v.op_date}'`;
                 const checkRowsResult = await queryDB(checkSql);
                 return checkRowsResult;
             })

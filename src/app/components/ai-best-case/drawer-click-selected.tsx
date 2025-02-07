@@ -73,6 +73,14 @@ const DrawerClickSelected = ({
             { unselected: [...disSelectedData] },
         ];
 
+        // fetch(`/api/ai`, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify(req),
+        // }).then((response) => response.json());
+
         fetch(`/api/best`, {
             method: "POST",
             headers: {
@@ -84,8 +92,6 @@ const DrawerClickSelected = ({
             .then(() => {
                 setIsSelectedConfirm(true);
                 setIsModalOpen(false);
-                // setIsPostEnd(true);
-                // setIsMessage("베스트 리뷰로 선정했습니다.");
             })
             .catch((error) => {
                 console.error("Error sending data:", error);
@@ -95,16 +101,7 @@ const DrawerClickSelected = ({
             });
         setIsPostEnd(false);
         setIsPostEnd(false);
-        // setOpen(false);
     };
-
-    // useEffect(() => {
-    //     if (isHeartClick) {
-    //         setTimeout(() => {
-    //             setIsHeartClick(false);
-    //         }, 1000);
-    //     }
-    // }, [isHeartClick]);
 
     return (
         <>

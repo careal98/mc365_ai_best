@@ -5,6 +5,7 @@ interface UserInfo {
     psEntry: string;
     opDate: string;
     part: string;
+    auto_check: number;
 }
 
 export async function GET(req: Request) {
@@ -43,7 +44,7 @@ export async function GET(req: Request) {
                             AND I1.top1 = I2.top1
                             AND I1.confidence1 >= ${confidence1}
                             AND I2.confidence1 >= ${confidence1}
-                        ORDER BY A.RANK ASC, A.Op_Date DESC 
+                        ORDER BY Auto_Check DESC, A.RANK ASC, A.Op_Date DESC 
                         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
                         `;
         const results: any[] = await queryDB(baseSql);
@@ -52,6 +53,7 @@ export async function GET(req: Request) {
             psEntry: result.Psentry,
             opDate: result.Op_Date,
             part: result.Surgical_Site,
+            auto_check: result.Auto_Check,
         }));
 
         // AI가 선정한 수술의 psEntry로 사진 추출
@@ -179,6 +181,7 @@ export async function GET(req: Request) {
                 sex: userRows?.[userIdx]?.[0]?.["sex"],
                 age: userRows?.[userIdx]?.[0]?.["age"],
                 op_part: userRows?.[userIdx]?.[0]?.["메인부위명"],
+                auto_check: user?.auto_check,
             },
             imgs: imgs?.[userIdx]?.flat(),
             size: {
