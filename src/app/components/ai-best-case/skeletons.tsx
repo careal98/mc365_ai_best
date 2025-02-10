@@ -33,26 +33,10 @@ const Skeletons = () => {
                         className="py-1 w-6 skeleton-button"
                     />
                     <div className="grid grid-cols-2 gap-1 h-[40px]">
-                        <Skeleton.Node
-                            active
-                            fullSize
-                            style={{ height: 18 }}
-                        />
-                        <Skeleton.Node
-                            active
-                            fullSize
-                            style={{ height: 18 }}
-                        />
-                        <Skeleton.Node
-                            active
-                            fullSize
-                            style={{ height: 18 }}
-                        />
-                        <Skeleton.Node
-                            active
-                            fullSize
-                            style={{ height: 18 }}
-                        />
+                        <Skeleton.Node active fullSize style={{ height: 18 }} />
+                        <Skeleton.Node active fullSize style={{ height: 18 }} />
+                        <Skeleton.Node active fullSize style={{ height: 18 }} />
+                        <Skeleton.Node active fullSize style={{ height: 18 }} />
                     </div>
                 </div>
             ))}
