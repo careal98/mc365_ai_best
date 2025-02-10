@@ -26,8 +26,6 @@ const DrawerClickSelected = ({
     setIsModalOpen,
     setIsSelectedConfirm,
 }: Props) => {
-    // const [isHeartClick, setIsHeartClick] = useState(false);
-
     const { watch } = useFormContext<FormType>();
     const isRandom = watch()?.isRandom;
     const isBest = isRandom?.filter((v) => v?.isBest);
@@ -72,14 +70,6 @@ const DrawerClickSelected = ({
             { selected: [...selectedData] },
             { unselected: [...disSelectedData] },
         ];
-
-        // fetch(`/api/ai`, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify(req),
-        // }).then((response) => response.json());
 
         fetch(`/api/best`, {
             method: "POST",
@@ -167,20 +157,6 @@ const DrawerClickSelected = ({
                     </div>
                 </div>
             </Drawer>
-            {/* <Spin
-                key={`isHeartClick_${JSON.stringify(isHeartClick)}`}
-                spinning={isHeartClick}
-                fullscreen
-                size="large"
-                rootClassName="max-w-[480px] mx-auto"
-                indicator={
-                    <img
-                        src="/assets/heart10.gif"
-                        alt="Heart Animation"
-                        width="24"
-                    />
-                }
-            /> */}
         </>
     );
 };

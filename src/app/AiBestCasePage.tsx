@@ -356,17 +356,6 @@ const AiBestCasePage = () => {
                                             setIsSelectedConfirm
                                         }
                                     />
-                                    {/* <ClickSelected
-                                open={isModalopen}
-                                setOpen={setOpen}
-                                isCopySelected={isCopySelected}
-                                setIsPostEnd={setIsPostEnd}
-                                setIsMessage={setIsMessage}
-                                setIsError={setIsError}
-                                doctorId={doctorId ?? ""}
-                                setIsModalOpen={setIsModalOpen}
-                                setIsSelectedConfirm={setIsSelectedConfirm}
-                            /> */}
                                 </>
                             ) : (
                                 <AlreadyList />

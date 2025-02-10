@@ -26,8 +26,6 @@ const ClickSelected = ({
     setIsModalOpen,
     setIsSelectedConfirm,
 }: Props) => {
-    // const [isHeartClick, setIsHeartClick] = useState(false);
-
     const { watch } = useFormContext<FormType>();
     const isRandom = watch()?.isRandom;
     const isBest = isRandom?.filter((v) => v?.isBest);
@@ -84,8 +82,6 @@ const ClickSelected = ({
             .then(() => {
                 setIsSelectedConfirm(true);
                 setIsModalOpen(false);
-                // setIsPostEnd(true);
-                // setIsMessage("베스트 리뷰로 선정했습니다.");
             })
             .catch((error) => {
                 console.error("Error sending data:", error);
@@ -95,16 +91,7 @@ const ClickSelected = ({
             });
         setIsPostEnd(false);
         setIsPostEnd(false);
-        // setOpen(false);
     };
-
-    // useEffect(() => {
-    //     if (isHeartClick) {
-    //         setTimeout(() => {
-    //             setIsHeartClick(false);
-    //         }, 1000);
-    //     }
-    // }, [isHeartClick]);
 
     return (
         <>

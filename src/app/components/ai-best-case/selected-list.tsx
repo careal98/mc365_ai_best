@@ -8,7 +8,7 @@ interface Props {
     open: boolean;
     setOpen: (v: boolean) => void;
 }
-// bg-[#FAE7DE]
+
 const SelectedList = ({ open, setOpen }: Props) => {
     const { watch } = useFormContext<FormType>();
     const isBest = watch()?.isRandom?.filter((f) => f.isBest);
