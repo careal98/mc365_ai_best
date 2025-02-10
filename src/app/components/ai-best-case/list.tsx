@@ -81,7 +81,10 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                 const res = await onHandleImgs(psEntry, opDate);
                 const images: string[] = res?.flatMap((v: string) => v) ?? [];
 
-                setPreviewImages((prev) => ({ ...prev, [fieldIdx]: images }));
+                setPreviewImages((prev) => ({
+                    ...prev,
+                    [fieldIdx]: images,
+                }));
             } catch (error) {
                 console.error("이미지 로딩 오류:", error);
             }
@@ -121,9 +124,17 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                         prev
                             ? [
                                   ...prev,
-                                  { psEntry: currentId, opDate: currentOpDate },
+                                  {
+                                      psEntry: currentId,
+                                      opDate: currentOpDate,
+                                  },
                               ]
-                            : [{ psEntry: currentId, opDate: currentOpDate }]
+                            : [
+                                  {
+                                      psEntry: currentId,
+                                      opDate: currentOpDate,
+                                  },
+                              ]
                     );
                     setIsPostEnd(false);
                     setIsError(false);
@@ -167,7 +178,9 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                     fieldIdx
                                                 ]?.map(
                                                     (v) =>
-                                                        `${imgUrl}${v.slice(4)}`
+                                                        `${imgUrl}${v.slice(
+                                                            4
+                                                        )}`
                                                 )}
                                                 preview={{
                                                     countRender: (
@@ -176,7 +189,8 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                     ) => {
                                                         return (
                                                             <>
-                                                                {total === 2 ? (
+                                                                {total ===
+                                                                2 ? (
                                                                     <Player
                                                                         autoplay
                                                                         loop
@@ -241,7 +255,9 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                             "rounded-xl object-cover",
                                                     }}
                                                     onLoad={() =>
-                                                        handleImageLoad(imgIdx)
+                                                        handleImageLoad(
+                                                            imgIdx
+                                                        )
                                                     }
                                                     onClick={() =>
                                                         onHandleClick(
@@ -274,11 +290,11 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                 }`}
                                                 onClick={() => {
                                                     const currentId =
-                                                        fields?.[fieldIdx]?.user
-                                                            ?.psEntry;
+                                                        fields?.[fieldIdx]
+                                                            ?.user?.psEntry;
                                                     const currentOpDate =
-                                                        fields?.[fieldIdx]?.user
-                                                            ?.op_data;
+                                                        fields?.[fieldIdx]
+                                                            ?.user?.op_data;
                                                     handleHeartClick(
                                                         fieldIdx,
                                                         currentId,
@@ -326,7 +342,9 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                 : "0.0"}{" "}
                                             ~{" "}
                                             {weight?.after
-                                                ? `${weight.after.toFixed(1)}kg`
+                                                ? `${weight.after.toFixed(
+                                                      1
+                                                  )}kg`
                                                 : "0.0"}
                                         </p>
                                     </div>
@@ -362,7 +380,10 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                     }
                 />
                 {!isLoading && (
-                    <div ref={ref} style={{ height: "1px", bottom: "-30px" }} />
+                    <div
+                        ref={ref}
+                        style={{ height: "1px", bottom: "-30px" }}
+                    />
                 )}
             </div>
         );
