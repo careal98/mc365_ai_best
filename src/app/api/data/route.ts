@@ -22,29 +22,23 @@ export async function GET(req: Request) {
         // AI가 선정한 사진에 해당하는 수술 정보
         const baseSql = `
                         SELECT DISTINCT A.*
-                        FROM 
-                            tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
-                        INNER JOIN 
-                            tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
-                            ON CONVERT(VARCHAR, A.Psentry) = I1.surgeryID
-                            AND A.Op_Date > I1.op_data
-                        INNER JOIN 
-                            tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
-                            ON CONVERT(VARCHAR, A.Psentry) = I2.surgeryID
-                            AND A.Op_Date <= I2.op_data
-                        LEFT JOIN 
-                            tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE M
+                        FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
+                        LEFT JOIN tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE M
                             ON A.Psentry COLLATE Korean_Wansung_CI_AS = M.고객번호 COLLATE Korean_Wansung_CI_AS
                             AND A.Op_Date COLLATE Korean_Wansung_CI_AS = M.OPDATE COLLATE Korean_Wansung_CI_AS
-                        WHERE 
-                            A.Year = ${year}
+                        JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
+                            ON CONVERT(NUMERIC , A.Psentry) = I1.surgeryID
+                            AND CONVERT(NUMERIC, A.Op_Date) > I1.op_data
+                            AND I1.confidence1 >= ${confidence1}
+                        JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
+                            ON CONVERT(NUMERIC, A.Psentry) = I2.surgeryID
+                            AND CONVERT(NUMERIC, A.Op_Date) <= I2.op_data
+                            AND I1.top1 = I2.top1
+                            AND I2.confidence1 >= ${confidence1}
+                        WHERE A.Year = ${year}
                             AND A.Month = ${month}
                             AND A.Doctor_Id = '${doctorId}'
-                            AND M.고객번호 IS NULL
-                            AND I1.top1 = I2.top1
-                            AND I1.confidence1 >= ${confidence1}
-                            AND I2.confidence1 >= ${confidence1}
-                        ORDER BY A.Op_Date DESC, A.RANK ASC
+                        ORDER BY A.RANK ASC, A.Op_Date DESC
                         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
                         `;
         const results: any[] = await queryDB(baseSql);
@@ -56,7 +50,7 @@ export async function GET(req: Request) {
             auto_check: result.Auto_Check,
         }));
 
-        // AI가 선정한 수술의 psEntry로 사진 추출
+        // AI가 선정한 수술의 psEntry로 후사진의 top1
         const arrAfterTop1: any[] = await Promise.all(
             info.map(async (i1) => {
                 const sql = `
@@ -71,6 +65,7 @@ export async function GET(req: Request) {
             })
         );
 
+        // 후사진의 top1과 일치하는 전사진 유무 파악
         const arrTop1: any[] = await Promise.all(
             arrAfterTop1?.map(async (row: any, rowIdx: number) => {
                 const topArr: string[] = [];
@@ -99,6 +94,7 @@ export async function GET(req: Request) {
             })
         );
 
+        // top1이 일치하는 전&후사진
         const imgs = await Promise.all(
             info?.map(async (aRow, aRowIdx) => {
                 const top1 = arrTop1?.[aRowIdx]?.sort(
@@ -171,6 +167,7 @@ export async function GET(req: Request) {
             })
         );
 
+        // 데이터 정리
         const userData: any[] = info?.map((user, userIdx) => ({
             isBest: isBestRows?.[userIdx]?.length !== 0 ? true : false,
             user: {
