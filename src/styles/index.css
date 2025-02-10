@@ -237,11 +237,6 @@
 .ant-image-preview-operations {
     display: none;
 }
-.ant-image-preview-footer {
-    color: white;
-    bottom: 22%;
-    font-weight: 600;
-}
 .ant-image-preview-root .ant-image-preview-img {
     width: 100%;
 }

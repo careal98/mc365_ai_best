@@ -196,7 +196,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                                         className="w-[200px] relative top-[45px]"
                                                                     />
                                                                 ) : (
-                                                                    <p>{`${current}/${total}`}</p>
+                                                                    <p className="font-bold text-[15px]">{`${current}/${total}`}</p>
                                                                 )}
                                                             </>
                                                         );
