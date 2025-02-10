@@ -28,11 +28,11 @@ export async function GET(req: Request) {
                             AND A.Op_Date COLLATE Korean_Wansung_CI_AS = M.OPDATE COLLATE Korean_Wansung_CI_AS
                         JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
                             ON CONVERT(NUMERIC , A.Psentry) = I1.surgeryID
-                            AND CONVERT(NUMERIC, A.Op_Date) > I1.op_data
+                            AND CONVERT(NUMERIC, A.Op_Date) < I1.op_data
                             AND I1.confidence1 >= ${confidence1}
                         JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
                             ON CONVERT(NUMERIC, A.Psentry) = I2.surgeryID
-                            AND CONVERT(NUMERIC, A.Op_Date) <= I2.op_data
+                            AND CONVERT(NUMERIC, A.Op_Date) >= I2.op_data
                             AND I1.top1 = I2.top1
                             AND I2.confidence1 >= ${confidence1}
                         WHERE A.Year = ${year}
