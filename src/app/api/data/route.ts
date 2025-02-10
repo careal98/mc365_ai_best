@@ -44,7 +44,7 @@ export async function GET(req: Request) {
                             AND I1.top1 = I2.top1
                             AND I1.confidence1 >= ${confidence1}
                             AND I2.confidence1 >= ${confidence1}
-                        ORDER BY Auto_Check DESC, A.RANK ASC, A.Op_Date DESC 
+                        ORDER BY A.Op_Date DESC, A.RANK ASC
                         OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
                         `;
         const results: any[] = await queryDB(baseSql);
@@ -116,7 +116,7 @@ export async function GET(req: Request) {
                                 WHERE surgeryID = ${Number(aRow?.psEntry)}
                                     AND op_data > ${Number(aRow?.opDate)}
                                     AND top1 = ${top1}
-                                ORDER BY op_data ASC, top1 ASC, confidence1 DESC
+                                ORDER BY op_data DESC, top1 ASC, indate DESC
                                 `;
                 const [beforeImgRowsResult, afterImgRowsResult] =
                     await Promise.all([queryDB(beforeSql), queryDB(afterSql)]);
