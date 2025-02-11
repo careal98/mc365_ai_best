@@ -10,7 +10,13 @@ import { Image, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Skeletons from "./skeletons";
 import { CheckedType, FormType } from "@/types";
-import { Dispatch, forwardRef, SetStateAction, useState } from "react";
+import {
+    Dispatch,
+    forwardRef,
+    SetStateAction,
+    useCallback,
+    useState,
+} from "react";
 import { imgUrl } from "@/variables";
 import { Player } from "@lottiefiles/react-lottie-player";
 
@@ -55,22 +61,26 @@ const List = forwardRef<HTMLDivElement, ListProps>(
         });
 
         // 클릭 시 이미지 상세
-        const onHandleImgs = async (psEntry: string, opDate: string) => {
-            if (!psEntry && !opDate) return;
-            try {
-                const response = await fetch(
-                    `/api/images?psEntry=${psEntry}&opDate=${opDate}`,
-                    {
-                        method: "GET",
-                        mode: "no-cors",
-                    }
-                );
-                const result = await response.json();
-                return result;
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
+        const onHandleImgs = useCallback(
+            async (psEntry: string, opDate: string) => {
+                if (!psEntry || !opDate) return;
+
+                try {
+                    const response = await fetch(
+                        `/api/images?psEntry=${psEntry}&opDate=${opDate}`,
+                        {
+                            method: "GET",
+                            mode: "no-cors",
+                        }
+                    );
+                    const result = await response.json();
+                    return result;
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            },
+            []
+        );
 
         const onHandleClick = async (
             fieldIdx: number,
@@ -147,6 +157,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                 setIsAnimating(false);
             }, 1900);
         };
+
         return (
             <div className="w-full flex flex-col py-2 h-full px-4 gap-y-2 overflow-scroll bg-[#ff6600]/10">
                 {fields?.map((field, fieldIdx) => {
