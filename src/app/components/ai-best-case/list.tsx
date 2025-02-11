@@ -232,8 +232,8 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                                 <div
                                                                     className={`ml-2 mt-2 absolute z-[999] px-1 py-1 rounded-md ${
                                                                         after
-                                                                            ? "bg-[#FF6600]/60"
-                                                                            : "bg-gray-600/60"
+                                                                            ? "bg-[#FF6600]/55"
+                                                                            : "bg-gray-600/55"
                                                                     }`}
                                                                 >
                                                                     <p className="text-white text-[12px] font-medium">
