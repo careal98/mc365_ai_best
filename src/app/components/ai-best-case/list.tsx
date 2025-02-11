@@ -216,7 +216,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                         return (
                                                             <div
                                                                 key={current}
-                                                                className="w-full relative"
+                                                                className="w-full max-w-[480px] relative"
                                                             >
                                                                 <div
                                                                     className={`ml-2 mt-2 absolute z-[999] px-1 py-1 rounded-md ${
