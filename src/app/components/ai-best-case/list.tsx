@@ -317,12 +317,12 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                 />
                             </div>
                             <div className="">
-                                <div className="grid grid-cols-2">
+                                <div className="grid grid-cols-2 gap-4">
                                     <div className="flex items-start">
                                         <p className="text-[12px] leading-5 tracking-wide text-gray-600">
                                             고객:
                                         </p>
-                                        <p className="text-[14px] text-gray-600 font-semibold leading-5 tracking-normal">
+                                        <p className="text-[14px] text-gray-600 leading-5 tracking-normal">
                                             {user?.name} (
                                             {user?.sex === "M" ? "남" : "여"},{" "}
                                             {user?.age})
@@ -337,33 +337,41 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                         </p>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2">
+                                <div className="grid grid-cols-2 gap-4">
                                     <div className="flex items-start">
                                         <p className="text-[12px] leading-5 tracking-wide text-gray-600">
                                             체중:
                                         </p>
-                                        <p className="text-[14px] text-gray-600 font-semibold leading-5 tracking-normal">
+                                        <p className="text-[14px] text-gray-600 leading-5 tracking-normal">
                                             {weight?.before
-                                                ? weight.before.toFixed(1)
+                                                ? `${weight.before.toFixed(
+                                                      1
+                                                  )} ->`
                                                 : "0.0"}{" "}
-                                            ~{" "}
-                                            {weight?.after
-                                                ? `${weight.after.toFixed(1)}kg`
-                                                : "0.0"}
+                                            <span className="font-semibold">
+                                                {weight?.after
+                                                    ? `${weight.after.toFixed(
+                                                          1
+                                                      )}kg`
+                                                    : "0.0"}
+                                            </span>
                                         </p>
                                     </div>
                                     <div className="flex items-start">
                                         <p className="text-[12px] leading-5 tracking-wide text-gray-600">
                                             사이즈:
                                         </p>
-                                        <p className="text-[14px] text-gray-600 font-semibold leading-5 tracking-normal">
+                                        <p className="text-[14px] text-gray-600 leading-5 tracking-normal">
                                             {size?.before
-                                                ? size.before.toFixed(1)
+                                                ? `${size.before.toFixed(1)} ->`
                                                 : "0.0"}{" "}
-                                            ~{" "}
-                                            {size?.after
-                                                ? `${size.after.toFixed(1)}cm`
-                                                : "0.0"}
+                                            <span className="font-semibold">
+                                                {size?.after
+                                                    ? `${size.after.toFixed(
+                                                          1
+                                                      )}cm`
+                                                    : "0.0"}
+                                            </span>
                                         </p>
                                     </div>
                                 </div>
