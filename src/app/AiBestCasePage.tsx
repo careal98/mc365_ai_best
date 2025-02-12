@@ -242,11 +242,15 @@ const AiBestCasePage = () => {
     }, [year, month, doctorId]);
 
     useEffect(() => {
+        const aaa = checkedData?.map((s) => ({
+            psEntry: s?.psEntry,
+            opDate: s?.opDate,
+        }));
         const bbb = firstData?.map((d) => ({
             psEntry: d?.user?.psEntry,
             opDate: d?.user?.op_data,
         }));
-        const ccc = [...bbb];
+        const ccc = [...bbb, ...aaa];
         const uniqueArray = Array.from(
             new Map(ccc.map((item) => [JSON.stringify(item), item])).values()
         );
