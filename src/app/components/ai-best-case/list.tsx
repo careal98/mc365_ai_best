@@ -338,41 +338,57 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="flex items-start">
+                                    <div className="flex w-full">
                                         <p className="text-[12px] leading-5 tracking-wide text-gray-600">
                                             체중:
                                         </p>
-                                        <p className="text-[14px] text-gray-600 leading-5 tracking-normal">
-                                            {weight?.before
-                                                ? `${weight.before.toFixed(
-                                                      1
-                                                  )} ->`
-                                                : "0.0"}{" "}
-                                            <span className="font-semibold">
+                                        <div className="flex text-[14px] text-gray-600 leading-5 tracking-normal gap-1">
+                                            <p>
+                                                {weight?.before
+                                                    ? `${weight.before.toFixed(
+                                                          1
+                                                      )}`
+                                                    : "0.0"}
+                                            </p>
+                                            <img
+                                                src="/assets/right-arrow.png"
+                                                width={12}
+                                                className="h-4 pt-1"
+                                            />
+                                            <p className="font-semibold">
                                                 {weight?.after
                                                     ? `${weight.after.toFixed(
                                                           1
                                                       )}kg`
                                                     : "0.0"}
-                                            </span>
-                                        </p>
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-start">
-                                        <p className="text-[12px] leading-5 tracking-wide text-gray-600">
+                                    <div className="flex w-full">
+                                        <p className="text-[12px] leading-5 tracking-wide text-gray-600 whitespace-nowrap">
                                             사이즈:
                                         </p>
-                                        <p className="text-[14px] text-gray-600 leading-5 tracking-normal">
-                                            {size?.before
-                                                ? `${size.before.toFixed(1)} ->`
-                                                : "0.0"}{" "}
-                                            <span className="font-semibold">
+                                        <div className="flex text-[14px] text-gray-600 leading-5 tracking-normal gap-1 justify-center">
+                                            <p>
+                                                {size?.before
+                                                    ? `${size.before.toFixed(
+                                                          1
+                                                      )}`
+                                                    : "0.0"}
+                                            </p>
+                                            <img
+                                                src="/assets/right-arrow.png"
+                                                width={16}
+                                                className="h-4 pt-1"
+                                            />
+                                            <p className="font-semibold">
                                                 {size?.after
                                                     ? `${size.after.toFixed(
                                                           1
                                                       )}cm`
                                                     : "0.0"}
-                                            </span>
-                                        </p>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
