@@ -18,7 +18,6 @@ export async function GET(req: Request) {
             offset = 0,
             limit = 3,
         } = Object.fromEntries(url.searchParams.entries());
-        const confidence1 = 0.7;
         // AI가 선정한 사진에 해당하는 수술 정보
         const baseSql = `
                         SELECT DISTINCT A.*
@@ -29,12 +28,10 @@ export async function GET(req: Request) {
                         JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
                             ON CONVERT(NUMERIC , A.Psentry) = I1.surgeryID
                             AND CONVERT(NUMERIC, A.Op_Date) < I1.op_data
-                            AND I1.confidence1 >= ${confidence1}
                         JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
                             ON CONVERT(NUMERIC, A.Psentry) = I2.surgeryID
                             AND CONVERT(NUMERIC, A.Op_Date) >= I2.op_data
                             AND I1.top1 = I2.top1
-                            AND I2.confidence1 >= ${confidence1}
                         WHERE A.Year = ${year}
                             AND A.Month = ${month}
                             AND A.Doctor_Id = '${doctorId}'
@@ -56,7 +53,6 @@ export async function GET(req: Request) {
                 const sql = `
                             SELECT top1 FROM IMAGE_SECTION_INFO
                             WHERE surgeryID = ${Number(i1.psEntry)}
-                                AND confidence1 >= ${confidence1}
                                 AND op_data > ${Number(i1.opDate)}
                             ORDER BY op_data DESC, top1 ASC, indate DESC
                             `;
@@ -79,7 +75,6 @@ export async function GET(req: Request) {
                                         AND op_data <= ${Number(
                                             info?.[rowIdx]?.opDate
                                         )}
-                                        AND confidence1 >= ${confidence1}
                                         AND top1 = ${r?.top1}
                                     ORDER BY op_data DESC, top1 ASC, indate DESC
                                     `;

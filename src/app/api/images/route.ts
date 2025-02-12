@@ -11,12 +11,10 @@ export async function GET(req: Request) {
         const { psEntry, opDate } = Object.fromEntries(
             url.searchParams.entries()
         );
-        const confidence1 = 0.7;
         const sql = `
                     SELECT top1 FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                     WHERE surgeryID = ${Number(psEntry)}
                         AND op_data > ${Number(opDate)}
-                        AND confidence1 > ${confidence1}
                     ORDER BY op_data DESC, top1 ASC, indate DESC
                     `;
         const afterRowsResult: Top1[] = await queryDB(sql);
@@ -27,7 +25,6 @@ export async function GET(req: Request) {
                                 SELECT top1 FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO
                                 WHERE surgeryID = ${Number(psEntry)}
                                     AND op_data <= ${Number(opDate)}
-                                    AND confidence1 >= ${confidence1}
                                     AND top1 = ${row?.top1}
                                 ORDER BY op_data DESC, top1 ASC, indate DESC
                                 `;
