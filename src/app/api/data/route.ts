@@ -29,18 +29,19 @@ export async function GET(req: Request) {
         //                 AND A.Month = ${month}
         //                 AND A.Doctor_Id = '${doctorId}'
         //                 AND EXISTS (
-        //                     SELECT 1
-        //                     FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
-        //                     JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
-        //                         ON I1.surgeryID = I2.surgeryID
-        //                         AND I1.top1 = I2.top1
-        //                     WHERE CONVERT(NUMERIC, A.Psentry) = I1.surgeryID
-        //                         AND CONVERT(NUMERIC, A.Op_Date) < I1.op_data
-        //                         AND CONVERT(NUMERIC, A.Psentry) = I2.surgeryID
-        //                         AND CONVERT(NUMERIC, A.Op_Date) >= I2.op_data
-        //                 )
+        //                         SELECT TOP 1 * FROM (
+        //                             SELECT * FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO AS I
+        //                             WHERE CONVERT(NUMERIC, A.Psentry) = I.surgeryID
+        //                             AND CONVERT(NUMERIC, A.Op_Date) < I.op_data
+        //                         ) AS IB, (
+        //                             SELECT * FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO AS I
+        //                             WHERE CONVERT(NUMERIC, A.Psentry) = I.surgeryID
+        //                             AND CONVERT(NUMERIC, A.Op_Date) >= I.op_data
+        //                         ) AS IA
+        //                         WHERE IB.top1 = IA.top1
+        //                         )
         //                 ORDER BY A.RANK ASC, A.Op_Date DESC
-        //                 OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+        //                 OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY;
         //                 `;
         const baseSql = `
                         SELECT DISTINCT A.*
