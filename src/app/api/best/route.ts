@@ -48,8 +48,8 @@ export async function POST(req: Request) {
             const checkedData = c?.[0];
             const isState = checkedData?.isState;
             if (isState === "INSERT") {
-                sql = `INSERT INTO MAIL_OPE_BEST_CASE (고객번호, 수술의ID, last_updated, OPDATE)
-            VALUES ('${checkedData.psEntry}', '${checkedData.doctorId}', SYSDATETIME(), '${checkedData.op_date}')`;
+                sql = `INSERT INTO MAIL_OPE_BEST_CASE (고객번호, 수술의ID, last_updated, OPDATE, device)
+            VALUES ('${checkedData.psEntry}', '${checkedData.doctorId}', SYSDATETIME(), '${checkedData.op_date}', 1)`;
             } else {
                 sql = `UPDATE MAIL_OPE_BEST_CASE SET last_updated = SYSDATETIME()
             WHERE 고객번호 = '${checkedData.psEntry}' AND 수술의ID = '${checkedData.doctorId}' AND OPDATE = '${checkedData.op_date}'`;
