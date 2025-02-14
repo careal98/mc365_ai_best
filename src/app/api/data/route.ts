@@ -19,6 +19,29 @@ export async function GET(req: Request) {
             limit = 3,
         } = Object.fromEntries(url.searchParams.entries());
         // AI가 선정한 사진에 해당하는 수술 정보
+        // const baseSql = `
+        //                 SELECT *
+        //                 FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
+        //                 LEFT JOIN tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE M
+        //                     ON A.Psentry COLLATE Korean_Wansung_CI_AS = M.고객번호 COLLATE Korean_Wansung_CI_AS
+        //                     AND A.Op_Date COLLATE Korean_Wansung_CI_AS = M.OPDATE COLLATE Korean_Wansung_CI_AS
+        //                 WHERE A.Year = ${year}
+        //                 AND A.Month = ${month}
+        //                 AND A.Doctor_Id = '${doctorId}'
+        //                 AND EXISTS (
+        //                     SELECT 1
+        //                     FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
+        //                     JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
+        //                         ON I1.surgeryID = I2.surgeryID
+        //                         AND I1.top1 = I2.top1
+        //                     WHERE CONVERT(NUMERIC, A.Psentry) = I1.surgeryID
+        //                         AND CONVERT(NUMERIC, A.Op_Date) < I1.op_data
+        //                         AND CONVERT(NUMERIC, A.Psentry) = I2.surgeryID
+        //                         AND CONVERT(NUMERIC, A.Op_Date) >= I2.op_data
+        //                 )
+        //                 ORDER BY A.RANK ASC, A.Op_Date DESC
+        //                 OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+        //                 `;
         const baseSql = `
                         SELECT DISTINCT A.*
                         FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
