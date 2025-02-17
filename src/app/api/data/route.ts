@@ -47,7 +47,8 @@ export async function GET(req: Request) {
                         SELECT * FROM BA 
                         WHERE rn = 1
                         ORDER BY RANK ASC, Op_Date DESC, top1 ASC, after_indate DESC, before_indate DESC
-                        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY;`;
+                        OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY;
+                        `;
         // const baseSql = `
         //                 SELECT *
         //                 FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A

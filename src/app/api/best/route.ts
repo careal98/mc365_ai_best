@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import queryDB from "../../../../lib/db";
 
+export const config = {
+    runtime: "nodejs",
+    maxDuration: 30,
+};
+
 export async function POST(req: Request) {
     try {
         const bestData = await req.json();
@@ -60,7 +65,11 @@ export async function POST(req: Request) {
         // 미선택한 수술이 베스트 케이스에 있는지 확인
         const unCheckDatas: any[] = await Promise.all(
             unBest.map(async (v) => {
-                const checkSql = `SELECT 고객번호, 수술의ID, OPDATE FROM MAIL_OPE_BEST_CASE WHERE 수술의ID = '${v.doctorId}' AND 고객번호 = '${v.psEntry}' and OPDATE = '${v.op_date}'`;
+                const checkSql = `SELECT 고객번호, 수술의ID, OPDATE 
+                                FROM MAIL_OPE_BEST_CASE 
+                                WHERE 수술의ID = '${v.doctorId}' 
+                                    AND 고객번호 = '${v.psEntry}' 
+                                    AND OPDATE = '${v.op_date}'`;
                 const checkRowsResult = await queryDB(checkSql);
                 return checkRowsResult;
             })
@@ -76,14 +85,14 @@ export async function POST(req: Request) {
                           isState:
                               b2?.고객번호 && b2?.수술의ID && b2?.OPDATE
                                   ? "DELETE"
-                                  : "INSERT",
+                                  : "NOTHING",
                       }))
                     : [
                           {
                               psEntry: b1?.psEntry,
                               doctorId: b1?.doctorId,
                               op_date: b1?.op_date,
-                              isState: "INSERT",
+                              isState: "NOTHING",
                           },
                       ];
             return dobleUnCheck;
@@ -94,7 +103,9 @@ export async function POST(req: Request) {
             const isState = unCheckedData?.isState;
             if (isState === "DELETE") {
                 sql = `DELETE FROM MAIL_OPE_BEST_CASE
-            WHERE 수술의ID = '${unCheckedData.doctorId}' AND 고객번호 = '${unCheckedData.psEntry}' and OPDATE = '${unCheckedData.op_date}'`;
+                    WHERE 수술의ID = '${unCheckedData.doctorId}' 
+                        AND 고객번호 = '${unCheckedData.psEntry}' 
+                        AND OPDATE = '${unCheckedData.op_date}'`;
             }
             const unCheckedPostResult = await queryDB(sql);
             return unCheckedPostResult;
