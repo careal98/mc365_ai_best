@@ -233,7 +233,7 @@ const AiBestCasePage = () => {
             Promise.all([checkData(), checkTotalData()])
                 .then(([checkedRes, totalRes]) => {
                     setCheckedData(checkedRes);
-                    setIsTotalCount(Number(totalRes));
+                    setIsTotalCount(totalRes?.[0]?.TotalCount);
                 })
                 .catch((error) => {
                     console.error("Error fetching check data:", error);

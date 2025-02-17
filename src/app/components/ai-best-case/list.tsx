@@ -47,6 +47,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
         }: ListProps,
         ref
     ) => {
+        const [isImgLoading, setImgLoading] = useState(false);
         const [loadingImages, setLoadingImages] = useState<boolean[]>([]);
 
         const handleImageLoad = (index: number) => {
@@ -87,6 +88,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
             psEntry: string,
             opDate: string
         ) => {
+            setImgLoading(true);
             try {
                 const res = await onHandleImgs(psEntry, opDate);
                 const images: string[] = res?.flatMap((v: string) => v) ?? [];
@@ -95,6 +97,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                     ...prev,
                     [fieldIdx]: images,
                 }));
+                setImgLoading(false);
             } catch (error) {
                 console.error("이미지 로딩 오류:", error);
             }
@@ -198,7 +201,7 @@ const List = forwardRef<HTMLDivElement, ListProps>(
                                                     ) => {
                                                         return (
                                                             <>
-                                                                {total === 2 ? (
+                                                                {isImgLoading ? (
                                                                     <Player
                                                                         autoplay
                                                                         loop

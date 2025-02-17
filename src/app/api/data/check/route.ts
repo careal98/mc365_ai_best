@@ -9,25 +9,34 @@ export async function GET(req: Request) {
         );
         // AI가 선정한 사진에 해당하는 수술 카운트
         const baseSql = `
-                        SELECT DISTINCT A.*
-                        FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
-                        LEFT JOIN tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE M
-                            ON A.Psentry COLLATE Korean_Wansung_CI_AS = M.고객번호 COLLATE Korean_Wansung_CI_AS
-                            AND A.Op_Date COLLATE Korean_Wansung_CI_AS = M.OPDATE COLLATE Korean_Wansung_CI_AS
-                        JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I1
-                            ON CONVERT(NUMERIC , A.Psentry) = I1.surgeryID
-                            AND CONVERT(NUMERIC, A.Op_Date) < I1.op_data
-                        JOIN tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I2
-                            ON CONVERT(NUMERIC, A.Psentry) = I2.surgeryID
-                            AND CONVERT(NUMERIC, A.Op_Date) >= I2.op_data
-                            AND I1.top1 = I2.top1
-                        WHERE A.Year = ${year}
-                            AND A.Month = ${month}
-                            AND A.Doctor_Id = '${doctorId}'
-                        ORDER BY A.RANK ASC, A.Op_Date DESC
+                        WITH AB AS (
+                            SELECT A.*, I.top1, I.PATH AS AFTER_PATH, indate AS after_indate 
+                            FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I, 
+                                tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A
+                            WHERE CONVERT(NUMERIC, A.Psentry) = I.surgeryID 
+                                AND CONVERT(NUMERIC, A.Op_Date) < I.op_data 
+                        ), AA AS (
+                            SELECT AB.*, I.PATH AS BEFORE_PATH, indate AS before_indate
+                            FROM tsfmc_mailsystem.dbo.IMAGE_SECTION_INFO I, AB
+                            WHERE AB.Psentry = I.surgeryID 
+                                AND CONVERT(NUMERIC, AB.Op_Date) >= I.op_data 
+                                AND AB.top1 = I.top1
+                        ), FBA AS (
+                            SELECT AA.* FROM tsfmc_mailsystem.dbo.MAIL_OPE_BEST_CASE_AI A 
+                            LEFT JOIN AA
+                            ON AA.Psentry = A.Psentry AND AA.Op_Date = A.Op_Date
+                        ), BA AS (
+                            SELECT *, ROW_NUMBER() OVER (PARTITION BY RANK ORDER BY RANK ASC, Op_Date DESC, top1 ASC, after_indate DESC, before_indate DESC) AS rn
+                            FROM FBA
+                            WHERE Year = ${year}
+                            AND Month = ${month}
+                            AND Doctor_Id = '${doctorId}'
+                        )
+                        SELECT COUNT(*) AS TotalCount FROM BA 
+                        WHERE rn = 1
                         `;
         const results: any[] = await queryDB(baseSql);
-        return new Response(JSON.stringify(results.length), { status: 200 });
+        return new Response(JSON.stringify(results), { status: 200 });
     } catch (err) {
         console.error("데이터 가져오기 중 에러 발생:", err);
         return new Response(
