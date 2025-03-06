@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from "next/server";
 import queryDB from "../../../../lib/db"; // DB 연결 함수
 
 type Top1 = {
@@ -72,11 +73,13 @@ export async function GET(req: Request) {
             )
         )?.flat();
 
-        return new Response(JSON.stringify(imgs), { status: 200 });
+        return NextResponse.json(
+            { success: true, list: imgs },
+            { status: 200 }
+        );
     } catch (err) {
-        console.error("데이터 가져오기 중 에러 발생:", err);
-        return new Response(
-            JSON.stringify({ message: "데이터 가져오기 에러", error: err }),
+        return NextResponse.json(
+            { success: false, message: err },
             { status: 500 }
         );
     }

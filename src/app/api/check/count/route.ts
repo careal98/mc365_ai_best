@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from "next/server";
 import queryDB from "../../../../../lib/db";
 
 export async function GET(req: Request) {
@@ -14,6 +15,8 @@ export async function GET(req: Request) {
                         AND MONTH(last_updated) = ${month}
                     `;
         const results = await queryDB(sql);
-        return new Response(JSON.stringify(results), { status: 200 });
-    } catch {}
+        return NextResponse.json({ success: true, exist: results });
+    } catch (error) {
+        return NextResponse.json({ success: false, message: error });
+    }
 }

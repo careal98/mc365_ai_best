@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import queryDB from "../../../../lib/db"; // DB 연결 함수
+import { NextResponse } from "next/server";
 
 interface UserInfo {
     psEntry: string;
@@ -242,11 +243,13 @@ export async function GET(req: Request) {
             },
         }));
 
-        return new Response(JSON.stringify(userData), { status: 200 });
+        return NextResponse.json(
+            { success: true, list: userData },
+            { status: 200 }
+        );
     } catch (err) {
-        console.error("데이터 가져오기 중 에러 발생:", err);
-        return new Response(
-            JSON.stringify({ message: "데이터 가져오기 에러", error: err }),
+        return NextResponse.json(
+            { success: false, message: err },
             { status: 500 }
         );
     }

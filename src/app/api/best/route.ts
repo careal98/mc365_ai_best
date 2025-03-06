@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from "next/server";
 import queryDB from "../../../../lib/db";
 
 export const config = {
@@ -121,8 +122,11 @@ export async function POST(req: Request) {
             }
         }, Promise.resolve());
 
-        return new Response(JSON.stringify(bestData), { status: 200 });
+        return NextResponse.json({ success: true, list: bestData });
     } catch (error) {
-        return new Response(JSON.stringify({ error }), { status: 500 });
+        return NextResponse.json(
+            { success: false, message: error },
+            { status: 500 }
+        );
     }
 }

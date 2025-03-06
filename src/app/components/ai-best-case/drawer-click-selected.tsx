@@ -15,6 +15,7 @@ interface Props {
     doctorId: string;
     setIsModalOpen: (v: boolean) => void;
     setIsSelectedConfirm: (v: boolean) => void;
+    checkedData: CheckedType[];
 }
 const DrawerClickSelected = ({
     open,
@@ -25,6 +26,7 @@ const DrawerClickSelected = ({
     doctorId,
     setIsModalOpen,
     setIsSelectedConfirm,
+    checkedData,
 }: Props) => {
     const { watch } = useFormContext<FormType>();
     const isRandom = watch()?.isRandom;
@@ -40,6 +42,10 @@ const DrawerClickSelected = ({
                     f.opDate === v?.user?.op_data
             )
         );
+
+        const isNotFilteredTrue =
+            isCopySelected?.length === 0 && checkedData?.length !== 0;
+
         const isFalse = isNotBest?.filter((v) =>
             isCopySelected?.find(
                 (f) =>
@@ -49,6 +55,7 @@ const DrawerClickSelected = ({
                     )
             )
         );
+
         const selectedData =
             isTrue?.length !== 0
                 ? isTrue?.map((v) => ({
@@ -61,14 +68,26 @@ const DrawerClickSelected = ({
                       doctorId: doctorId,
                       op_date: c?.opDate,
                   }));
+
+        const isExistFalse = checkedData?.map((s) => ({
+            psEntry: s?.psEntry,
+            doctorId: doctorId,
+            op_date: s?.opDate,
+        }));
+
         const disSelectedData = isFalse?.map((u) => ({
             psEntry: u.user.psEntry,
             doctorId: doctorId,
             op_date: u?.user?.op_data,
         }));
+
         const req = [
             { selected: [...selectedData] },
-            { unselected: [...disSelectedData] },
+            {
+                unselected: isNotFilteredTrue
+                    ? [...isExistFalse, ...disSelectedData]
+                    : [...disSelectedData],
+            },
         ];
 
         fetch(`/api/best`, {
@@ -79,9 +98,13 @@ const DrawerClickSelected = ({
             body: JSON.stringify(req),
         })
             .then((response) => response.json())
-            .then(() => {
-                setIsSelectedConfirm(true);
-                setIsModalOpen(false);
+            .then((res) => {
+                if (res.success) {
+                    setIsSelectedConfirm(true);
+                    setIsModalOpen(false);
+                } else {
+                    console.log(res.message);
+                }
             })
             .catch((error) => {
                 console.error("Error sending data:", error);

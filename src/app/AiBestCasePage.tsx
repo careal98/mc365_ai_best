@@ -117,12 +117,14 @@ const AiBestCasePage = () => {
         if (isClick && hasMore && !isLoading) {
             setIsLoading(true);
             fetchData(data?.length)
-                .then((newData) => {
-                    if (newData) {
-                        setData((prev) => [...prev, ...newData]);
-                        if (newData?.length < limit) {
+                .then((res) => {
+                    if (res?.success) {
+                        setData((prev) => [...prev, ...res?.list]);
+                        if (res?.list?.length < limit) {
                             setHasMore(false);
                         }
+                    } else {
+                        console.log(res.message);
                     }
                 })
                 .finally(() => {
@@ -183,8 +185,9 @@ const AiBestCasePage = () => {
             isFetched.current = true;
             setIsLoading(true);
             fetchData(0)
-                .then((newData) => {
-                    if (newData) {
+                .then((res) => {
+                    if (res.success) {
+                        const newData = res?.list;
                         setFirstData(
                             newData?.map((n: DataType) => ({
                                 isBest: true,
@@ -205,6 +208,8 @@ const AiBestCasePage = () => {
                         if (newData.length < limit) {
                             setHasMore(false);
                         }
+                    } else {
+                        console.log(res.message);
                     }
                 })
                 .finally(() => {
@@ -232,8 +237,12 @@ const AiBestCasePage = () => {
 
             Promise.all([checkData(), checkTotalData()])
                 .then(([checkedRes, totalRes]) => {
-                    setCheckedData(checkedRes);
-                    setIsTotalCount(totalRes?.[0]?.TotalCount);
+                    if (checkedRes?.success) {
+                        setCheckedData(checkedRes?.exist);
+                    }
+                    if (totalRes?.success) {
+                        setIsTotalCount(totalRes?.count?.[0]?.TotalCount);
+                    }
                 })
                 .catch((error) => {
                     console.error("Error fetching check data:", error);
@@ -306,8 +315,6 @@ const AiBestCasePage = () => {
                         />
                     ) : (
                         <>
-                            {/* {checkedData?.length === 0 ? (
-                                <> */}
                             {data?.length > 3 && (
                                 <div className="absolute bottom-14 left-[46%] z-50 bg-gray-400/30 rounded-lg px-1 py-1">
                                     <p className="text-[12px] font-medium text-gray-700">{`${isIndex}/${isTotalCount}`}</p>
@@ -342,6 +349,7 @@ const AiBestCasePage = () => {
                             <DrawerClickSelected
                                 open={isModalopen}
                                 setOpen={setOpen}
+                                checkedData={checkedData}
                                 isCopySelected={isCopySelected}
                                 setIsPostEnd={setIsPostEnd}
                                 setIsMessage={setIsMessage}
@@ -350,10 +358,6 @@ const AiBestCasePage = () => {
                                 setIsModalOpen={setIsModalOpen}
                                 setIsSelectedConfirm={setIsSelectedConfirm}
                             />
-                            {/* </>
-                            ) : (
-                                <AlreadyList />
-                            )} */}
                         </>
                     )}
                 </div>

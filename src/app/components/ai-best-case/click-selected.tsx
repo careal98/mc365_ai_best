@@ -79,9 +79,13 @@ const ClickSelected = ({
             body: JSON.stringify(req),
         })
             .then((response) => response.json())
-            .then(() => {
-                setIsSelectedConfirm(true);
-                setIsModalOpen(false);
+            .then((res) => {
+                if (res.success) {
+                    setIsSelectedConfirm(true);
+                    setIsModalOpen(false);
+                } else {
+                    console.log(res.message);
+                }
             })
             .catch((error) => {
                 console.error("Error sending data:", error);

@@ -90,8 +90,13 @@ const List = forwardRef<HTMLDivElement, ListProps>(
         ) => {
             setImgLoading(true);
             try {
+                let images: string[] = [];
                 const res = await onHandleImgs(psEntry, opDate);
-                const images: string[] = res?.flatMap((v: string) => v) ?? [];
+                if (res.success) {
+                    images = res?.list?.flatMap((v: string) => v) ?? [];
+                } else {
+                    console.log(res.message);
+                }
 
                 setPreviewImages((prev) => ({
                     ...prev,
